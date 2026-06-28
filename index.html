@@ -5,9 +5,9 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="/images/cyber_valkyrie.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>A.R. GIFT ENTERPRISES | Premium Collectibles & Anime Figurines</title>
+  <title>A.R. Gift Collection | Premium Collectibles & Anime Figurines</title>
   <meta name="description"
-    content="Discover A.R.GIFT ENTERPRISES. We craft premium, highly detailed 1/7 scale anime figurines and custom collector art toys using advanced sculpting and high-end finishes." />
+    content="Discover A.R. Gift Collection. We craft premium, highly detailed 1/7 scale anime figurines and custom collector art toys using advanced sculpting and high-end finishes." />
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 
@@ -27,13 +27,14 @@
   <header>
     <div class="container nav-container">
       <a href="#" class="logo" id="nav-logo-link">
-        <span>A.R.GIFT</span>ENTERPRISES
+        <span>A.R. Gift</span> Collection
       </a>
       <nav>
         <ul class="nav-links" id="nav-menu">
           <li><a href="#" class="nav-item active" data-view="home-view" id="nav-home">Home</a></li>
           <li><a href="#" class="nav-item" data-view="catalog-view" id="nav-catalog">Catalog</a></li>
           <li><a href="#" class="nav-item" data-view="contact-view" id="nav-contact">Inquiries</a></li>
+          <li><a href="#" class="nav-item cart-item" data-view="cart-view" id="nav-cart">Cart <span id="cart-count">(0)</span></a></li>
         </ul>
       </nav>
       <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">
@@ -52,7 +53,7 @@
           <span class="hero-tag">Premium Collector Series</span>
           <h1>Crafting the Extraordinary for Collectors</h1>
           <p class="hero-desc">
-            At A.R.GIFT ENTERPRISES, we translate artistic imagination into physical masterpieces. We specialize in
+            At A.R. Gift Collection, we translate artistic imagination into physical masterpieces. We specialize in
             limited-edition, highly-detailed collectibles starting with our industry-leading anime scale figurines.
           </p>
           <div class="hero-actions">
@@ -158,7 +159,7 @@
             <span class="section-tag">Partner with us</span>
             <h2>Commercial & Wholesale Inquiries</h2>
             <p>Are you a distributor, licensing partner, or looking for custom production runs? Get in touch with the
-              A.R.GIFT ENTERPRISES team to discuss orders, retail packages, or bespoke sculpts.</p>
+              A.R. Gift Collection team to discuss orders, retail packages, or bespoke sculpts.</p>
 
             <div class="info-cards">
               <div class="info-card">
@@ -172,7 +173,7 @@
                 <div class="info-card-icon">✉️</div>
                 <div>
                   <h4>Email Inquiries</h4>
-                  <p>commercial@argiftenterprises.com</p>
+                  <p>commercial@argiftcollection.com</p>
                 </div>
               </div>
               <div class="info-card">
@@ -222,6 +223,24 @@
         </div>
       </div>
     </section>
+
+    <!-- VIEW 4: CART PAGE -->
+    <section id="cart-view" class="view">
+      <div class="container catalog-layout">
+        <div class="section-header">
+          <span class="section-tag">Your Selection</span>
+          <h2 class="section-title">Shopping Cart</h2>
+        </div>
+        
+        <div id="cart-items-container" style="background: rgba(255,255,255,0.05); padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+          <!-- Cart items injected here -->
+        </div>
+        <div class="cart-summary" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 1.5rem;">
+          <h3 style="font-size: 1.5rem;">Total: <span id="cart-total-price">₹0</span></h3>
+          <button class="btn-primary" id="checkout-btn">Proceed to Checkout</button>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Detailed Product Modal Overlay (Drawer Style) -->
@@ -244,6 +263,13 @@
           <div class="modal-tabs">
             <button class="modal-tab-btn active" data-tab="tab-specs" id="btn-tab-specs">Specifications</button>
             <button class="modal-tab-btn" data-tab="tab-inquire" id="btn-tab-inquire">Request Quote</button>
+          </div>
+
+          <!-- Add to Cart in Modal -->
+          <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+             <button class="btn-primary" id="modal-add-to-cart" style="flex: 1; justify-content: center;">
+               Add to Cart
+             </button>
           </div>
 
           <!-- Tab 1: Specs -->
@@ -307,7 +333,7 @@
     <div class="container">
       <div class="footer-layout">
         <div class="footer-logo">
-          <span>A.R.GIFT</span>ENTERPRISES
+          <span>A.R. Gift</span> Collection
         </div>
         <ul class="footer-links">
           <li><a href="#" class="footer-nav-item" data-view="home-view">Home</a></li>
@@ -316,7 +342,7 @@
         </ul>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2026 A.R.GIFT ENTERPRISES. All rights reserved. Commercial Collectibles & Figurine Engineering.</p>
+        <p>&copy; 2026 A.R. Gift Collection. All rights reserved. Commercial Collectibles & Figurine Engineering.</p>
       </div>
   </footer>
 

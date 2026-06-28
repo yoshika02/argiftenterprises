@@ -7,8 +7,8 @@ export const categories = [
     active: true
   },
   {
-    id: 'ar-enterprises',
-    name: 'A.R. Enterprises',
+    id: 'ar-gift-collection',
+    name: 'A.R. Gift Collection',
     description: 'Premium wholesale toy collections and custom enterprise solutions.',
     image: '/images/cyber_valkyrie.png',
     active: true
@@ -89,7 +89,7 @@ const generatedProducts = Array.from({ length: 24 }).flatMap((_, i) => {
   return [
     {
       id: `ar-wholesale-${idTop}`,
-      categoryId: 'ar-enterprises',
+      categoryId: 'ar-gift-collection',
       name: topData.name,
       scale: topData.size,
       material: 'Premium PVC/ABS',
@@ -102,7 +102,7 @@ const generatedProducts = Array.from({ length: 24 }).flatMap((_, i) => {
     },
     {
       id: `ar-wholesale-${idBottom}`,
-      categoryId: 'ar-enterprises',
+      categoryId: 'ar-gift-collection',
       name: bottomData.name,
       scale: bottomData.size,
       material: 'Premium PVC/ABS',

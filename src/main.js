@@ -60,6 +60,9 @@ let currentCategoryFilter = 'all';
 let currentCarouselIndex = 0;
 let carouselAutoPlayInterval;
 
+// Cart State
+let cart = [];
+
 // Initialize App
 document.addEventListener('DOMContentLoaded', async () => {
   if (GOOGLE_SHEETS_CSV_URL && GOOGLE_SHEETS_CSV_URL.trim() !== "") {
@@ -74,6 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initFormEvents();
   initCarouselControls();
   startCarouselAutoPlay();
+  renderCart();
 });
 
 // Fetch Data from Google Sheets CSV
@@ -87,7 +91,7 @@ async function fetchCatalogFromGoogleSheets() {
         if (results.data && results.data.length > 0) {
           products = results.data.map(row => ({
             id: row.id || Math.random().toString(),
-            categoryId: row.categoryId || 'ar-enterprises',
+            categoryId: row.categoryId || 'ar-gift-collection',
             name: row.name || 'Unknown Product',
             scale: row.scale || 'Assorted',
             material: row.material || 'Premium PVC/ABS',
@@ -477,6 +481,16 @@ function openProductModal(product) {
   // Open overlay
   productModal.classList.add('active');
   document.body.style.overflow = 'hidden'; // stop page scrolling in background
+
+  // Setup Add to Cart button
+  const addToCartBtn = document.getElementById('modal-add-to-cart');
+  // Remove old listeners
+  const newAddToCartBtn = addToCartBtn.cloneNode(true);
+  addToCartBtn.parentNode.replaceChild(newAddToCartBtn, addToCartBtn);
+  newAddToCartBtn.addEventListener('click', () => {
+    addToCart(product);
+    closeProductModal();
+  });
 }
 
 function closeProductModal() {
@@ -517,4 +531,80 @@ function initFormEvents() {
       }, 3000);
     });
   }
+}
+
+// Cart Functionality
+function addToCart(product) {
+  const existingItem = cart.find(item => item.product.id === product.id);
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.push({ product, quantity: 1 });
+  }
+  updateCartUI();
+  alert(`${product.name} added to cart!`);
+}
+
+function removeFromCart(productId) {
+  cart = cart.filter(item => item.product.id !== productId);
+  updateCartUI();
+}
+
+function updateCartUI() {
+  const cartCountEl = document.getElementById('cart-count');
+  if (cartCountEl) {
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCountEl.textContent = `(${totalItems})`;
+  }
+  renderCart();
+}
+
+function renderCart() {
+  const cartContainer = document.getElementById('cart-items-container');
+  const cartTotalEl = document.getElementById('cart-total-price');
+  if (!cartContainer || !cartTotalEl) return;
+
+  if (cart.length === 0) {
+    cartContainer.innerHTML = '<p>Your cart is currently empty.</p>';
+    cartTotalEl.textContent = '₹0';
+    return;
+  }
+
+  let total = 0;
+  cartContainer.innerHTML = '';
+  cart.forEach(item => {
+    const itemTotal = item.quantity * parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
+    total += itemTotal;
+
+    const row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.justifyContent = 'space-between';
+    row.style.alignItems = 'center';
+    row.style.marginBottom = '1rem';
+    row.style.paddingBottom = '1rem';
+    row.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+
+    row.innerHTML = `
+      <div style="display:flex; align-items:center; gap: 1rem;">
+        <div style="width: 50px; height: 50px; background-image: url('${item.product.image}'); background-size: cover; background-position: center; border-radius: 4px;"></div>
+        <div>
+          <h4 style="margin: 0; font-family: var(--font-head);">${item.product.name}</h4>
+          <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">₹${item.product.price} x ${item.quantity}</p>
+        </div>
+      </div>
+      <div>
+        <span style="margin-right: 1rem; font-weight: bold;">₹${itemTotal}</span>
+        <button class="remove-item-btn btn-secondary" data-id="${item.product.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
+      </div>
+    `;
+    cartContainer.appendChild(row);
+  });
+
+  cartTotalEl.textContent = \`₹\${total}\`;
+
+  document.querySelectorAll('.remove-item-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      removeFromCart(e.target.getAttribute('data-id'));
+    });
+  });
 }
