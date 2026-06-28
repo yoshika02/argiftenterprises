@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/images/cyber_valkyrie.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex Toy Studio | Premium Collectibles & Anime Figurines</title>
+  <meta name="description"
+    content="Discover Apex Toy Studio. We craft premium, highly detailed 1/7 scale anime figurines and custom collector art toys using advanced sculpting and high-end finishes." />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+
+<body>
+  <!-- Announcement Bar -->
+  <div class="announcement-bar">
+    <div class="marquee-content">
+      <span>🚀 BULK ORDER ONLY - MINIMUM ORDER PRICE ₹5000 🚀</span>
+      <span>🚀 BULK ORDER ONLY - MINIMUM ORDER PRICE ₹5000 🚀</span>
+      <span>🚀 BULK ORDER ONLY - MINIMUM ORDER PRICE ₹5000 🚀</span>
+      <span>🚀 BULK ORDER ONLY - MINIMUM ORDER PRICE ₹5000 🚀</span>
+      <span>🚀 BULK ORDER ONLY - MINIMUM ORDER PRICE ₹5000 🚀</span>
+      <span>🚀 BULK ORDER ONLY - MINIMUM ORDER PRICE ₹5000 🚀</span>
+    </div>
+  </div>
+  <!-- Premium Navigation Bar -->
+  <header>
+    <div class="container nav-container">
+      <a href="#" class="logo" id="nav-logo-link">
+        <span>APEX</span>TOYS
+      </a>
+      <nav>
+        <ul class="nav-links" id="nav-menu">
+          <li><a href="#" class="nav-item active" data-view="home-view" id="nav-home">Home</a></li>
+          <li><a href="#" class="nav-item" data-view="catalog-view" id="nav-catalog">Catalog</a></li>
+          <li><a href="#" class="nav-item" data-view="contact-view" id="nav-contact">Inquiries</a></li>
+        </ul>
+      </nav>
+      <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- VIEW 1: HOME PAGE -->
+    <section id="home-view" class="view active">
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-glow"></div>
+        <div class="container hero-content">
+          <span class="hero-tag">Premium Collector Series</span>
+          <h1>Crafting the Extraordinary for Collectors</h1>
+          <p class="hero-desc">
+            At Apex Toy Studio, we translate artistic imagination into physical masterpieces. We specialize in
+            limited-edition, highly-detailed collectibles starting with our industry-leading anime scale figurines.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-primary" id="hero-cta-catalog" data-view="catalog-view">
+              Explore Catalog
+            </button>
+            <button class="btn-secondary" id="hero-cta-contact" data-view="contact-view">
+              Contact Studio
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products Showcase Section -->
+      <section class="home-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">Featured Masterpieces</span>
+            <h2 class="section-title">Our Latest Creations</h2>
+          </div>
+
+          <!-- Product Carousel -->
+          <div class="carousel-container">
+            <div class="carousel-wrapper">
+              <div class="carousel-track" id="carousel-track">
+                <!-- Carousel slides loaded dynamically via main.js -->
+              </div>
+
+              <!-- Carousel Controls -->
+              <button class="carousel-btn carousel-btn-prev" id="carousel-btn-prev" aria-label="Previous product">
+                ❮
+              </button>
+              <button class="carousel-btn carousel-btn-next" id="carousel-btn-next" aria-label="Next product">
+                ❯
+              </button>
+            </div>
+
+            <!-- Carousel Indicators -->
+            <div class="carousel-indicators" id="carousel-indicators">
+              <!-- Indicators loaded dynamically via main.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Craftsmanship Section -->
+      <section class="home-section"
+        style="background: rgba(255, 255, 255, 0.01); border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">Our Studio Craft</span>
+            <h2 class="section-title">Engineered Perfection</h2>
+          </div>
+          <div class="features-grid">
+            <div class="feature-box">
+              <div class="feature-icon">📐</div>
+              <h3>Precise 3D Sculpting</h3>
+              <p>Every dynamic muscle curve, lock of hair, and armor joint is sculpted by master digital modelers to
+                capture true movement and weight.</p>
+            </div>
+            <div class="feature-box">
+              <div class="feature-icon">🎨</div>
+              <h3>Fine-Art Paint Coating</h3>
+              <p>We use high-fidelity airbrush layering, pearlescent particles, and custom matte coatings to give
+                characters life-like visual textures.</p>
+            </div>
+            <div class="feature-box">
+              <div class="feature-icon">💎</div>
+              <h3>Collector Grade Resin</h3>
+              <p>Using structural ABS for absolute durability and high-clarity translucent resins for vibrant magical
+                and elemental effects.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- VIEW 2: DYNAMIC CATALOG PAGE -->
+    <section id="catalog-view" class="view">
+      <div class="container catalog-layout">
+        <div class="section-header">
+          <span class="section-tag">Exhibition Hall</span>
+          <h2 class="section-title">Browse Our Catalog</h2>
+        </div>
+
+        <!-- Category Filter Buttons -->
+        <div class="catalog-filters" id="catalog-category-filters">
+          <!-- Loaded dynamically via main.js -->
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" id="catalog-product-grid">
+          <!-- Loaded dynamically via main.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: INQUIRY / CONTACT PAGE -->
+    <section id="contact-view" class="view">
+      <div class="container home-section">
+        <div class="inquiry-layout">
+          <div class="inquiry-info">
+            <span class="section-tag">Partner with us</span>
+            <h2>Commercial & Wholesale Inquiries</h2>
+            <p>Are you a distributor, licensing partner, or looking for custom production runs? Get in touch with the
+              Apex Toy Studio team to discuss orders, retail packages, or bespoke sculpts.</p>
+
+            <div class="info-cards">
+              <div class="info-card">
+                <div class="info-card-icon">📍</div>
+                <div>
+                  <h4>Studio Headquarters</h4>
+                  <p>Tech District, Sector 4, Tokyo, Japan</p>
+                </div>
+              </div>
+              <div class="info-card">
+                <div class="info-card-icon">✉️</div>
+                <div>
+                  <h4>Email Inquiries</h4>
+                  <p>commercial@apextoystudio.com</p>
+                </div>
+              </div>
+              <div class="info-card">
+                <div class="info-card-icon">⏱️</div>
+                <div>
+                  <h4>Response Time</h4>
+                  <p>Usually within 24-48 business hours</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-box">
+            <div class="alert-success" id="contact-success-alert">
+              ✓ Thank you! Your commercial inquiry has been sent successfully. We will contact you soon.
+            </div>
+            <form id="general-inquiry-form">
+              <div class="form-group">
+                <label for="contact-name">Full Name</label>
+                <input type="text" id="contact-name" class="form-control" placeholder="John Doe" required />
+              </div>
+              <div class="form-group">
+                <label for="contact-email">Email Address</label>
+                <input type="email" id="contact-email" class="form-control" placeholder="john@company.com" required />
+              </div>
+              <div class="form-group">
+                <label for="contact-subject">Topic</label>
+                <select id="contact-subject" class="form-control" required>
+                  <option value="" disabled selected>Select an option</option>
+                  <option value="wholesale">Wholesale / Distribution</option>
+                  <option value="licensing">Brand Licensing</option>
+                  <option value="commission">Custom Sculpt Commission</option>
+                  <option value="other">General Question</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="contact-message">Inquiry Details</label>
+                <textarea id="contact-message" class="form-control"
+                  placeholder="Tell us about your company, volume requirements, or licensing proposal..."
+                  required></textarea>
+              </div>
+              <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+                Submit Commercial Inquiry
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Detailed Product Modal Overlay (Drawer Style) -->
+  <div class="modal-overlay" id="product-modal-overlay">
+    <div class="modal-wrapper">
+      <button class="modal-close" id="modal-close-btn" aria-label="Close details">✕</button>
+      <div class="modal-grid">
+        <!-- Left Col: Image -->
+        <div class="modal-img-col">
+          <div class="modal-img" id="modal-product-image" role="img" aria-label=""></div>
+        </div>
+        <!-- Right Col: Details -->
+        <div class="modal-content-col">
+          <div class="modal-header">
+            <span class="modal-badge" id="modal-product-scale">1/7 Scale</span>
+            <h3 class="modal-title" id="modal-product-name">Product Name</h3>
+          </div>
+
+          <!-- Modal Tabs -->
+          <div class="modal-tabs">
+            <button class="modal-tab-btn active" data-tab="tab-specs" id="btn-tab-specs">Specifications</button>
+            <button class="modal-tab-btn" data-tab="tab-inquire" id="btn-tab-inquire">Request Quote</button>
+          </div>
+
+          <!-- Tab 1: Specs -->
+          <div class="modal-tab-pane active" id="tab-specs">
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;" id="modal-product-desc">
+              Description goes here...
+            </p>
+            <ul class="spec-list">
+              <li><span>Material:</span> <span id="modal-spec-material">PVC / ABS</span></li>
+              <li><span>Dimensions:</span> <span id="modal-spec-dimensions">Height: 280mm</span></li>
+              <li><span>Release Date:</span> <span id="modal-spec-release">Q4 2026</span></li>
+            </ul>
+            <div style="margin-top: 1.5rem;">
+              <h4 style="margin-bottom: 0.5rem; font-family: var(--font-head); font-size: 1rem;">Special Features:</h4>
+              <ul class="feature-list" id="modal-feature-list">
+                <!-- Dynamically loaded -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tab 2: Quote Request Form -->
+          <div class="modal-tab-pane" id="tab-inquire">
+            <div class="modal-inquiry-box">
+              <div class="alert-success" id="modal-success-alert">
+                ✓ Your quote request has been received. Our sales lead will contact you.
+              </div>
+              <form id="modal-quote-form">
+                <input type="hidden" id="modal-quote-product-id" />
+                <div class="form-group">
+                  <label for="quote-qty">Estimated Quantity Needed</label>
+                  <select id="quote-qty" class="form-control" required>
+                    <option value="10-50">10 - 50 units (Standard Dealer)</option>
+                    <option value="50-200">50 - 200 units (Distributor)</option>
+                    <option value="200+">200+ units (Wholesale Partner)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="quote-email">Company Email</label>
+                  <input type="email" id="quote-email" class="form-control" placeholder="purchasing@store.com"
+                    required />
+                </div>
+                <div class="form-group">
+                  <label for="quote-notes">Additional Customization or Notes</label>
+                  <textarea id="quote-notes" class="form-control"
+                    placeholder="Include any logistics requirements or specific custom packaging needs..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">
+                  Submit Quote Request
+                </button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-layout">
+        <div class="footer-logo">
+          <span>APEX</span>TOYS
+        </div>
+        <ul class="footer-links">
+          <li><a href="#" class="footer-nav-item" data-view="home-view">Home</a></li>
+          <li><a href="#" class="footer-nav-item" data-view="catalog-view">Catalog</a></li>
+          <li><a href="#" class="footer-nav-item" data-view="contact-view">Inquiries</a></li>
+        </ul>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Apex Toy Studio. All rights reserved. Commercial Collectibles & Figurine Engineering.</p>
+      </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

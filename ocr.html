@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OCR Text Extraction</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body style="background: #111; color: #fff; font-family: monospace;">
+  <h1>Running OCR on Catalog Pages...</h1>
+  <pre id="output">{}</pre>
+  <script>
+    const results = {};
+    async function runOCR() {
+      const worker = await Tesseract.createWorker('eng');
+      
+      // We only read a few pages to avoid hanging the browser for too long, 
+      // e.g. pages 3 to 10 (16 products) to get the most important ones quickly.
+      // If we do all 24 pages it might take a minute.
+      const maxPages = 26; 
+      
+      for (let i = 3; i <= maxPages; i++) {
+        const pageNum = String(i).padStart(4, '0');
+        const url = `./ilovepdf_pages-to-jpg/A.R%20ENTERPRISES%20WHOLESALE_pages-to-jpg-${pageNum}.jpg`;
+        
+        try {
+          const img = new Image();
+          img.src = url;
+          await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+          
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          canvas.width = img.width * 0.4;
+          canvas.height = img.height / 2;
+          
+          // TOP HALF
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0,0, canvas.width, canvas.height);
+          ctx.drawImage(img, img.width * 0.6, 0, img.width * 0.4, img.height / 2, 0, 0, canvas.width, canvas.height);
+          let ret = await worker.recognize(canvas);
+          results[`${1001 + (i-3)*2}`] = ret.data.text.replace(/\n/g, ' ').trim();
+
+          // BOTTOM HALF
+          ctx.fillStyle = 'white';
+          ctx.fillRect(0,0, canvas.width, canvas.height);
+          ctx.drawImage(img, img.width * 0.6, img.height / 2, img.width * 0.4, img.height / 2, 0, 0, canvas.width, canvas.height);
+          ret = await worker.recognize(canvas);
+          results[`${1002 + (i-3)*2}`] = ret.data.text.replace(/\n/g, ' ').trim();
+          
+          document.getElementById('output').textContent = JSON.stringify(results, null, 2);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      await worker.terminate();
+      document.getElementById('output').textContent = JSON.stringify(results, null, 2) + "\n\nDONE";
+    }
+    runOCR();
+  </script>
+</body>
+</html>
