@@ -98,6 +98,7 @@ async function fetchCatalogFromGoogleSheets() {
             dimensions: row.dimensions || row.scale || 'Standard',
             releaseDate: row.releaseDate || 'Available Now',
             price: row.price || 'TBD',
+            inStock: row.inStock ? (row.inStock.toLowerCase() === 'true' || row.inStock.toLowerCase() === 'yes' || row.inStock.toLowerCase() === 'in stock') : true,
             description: `Size: ${row.scale || 'N/A'} | Price: ₹${row.price || 'TBD'}`,
             features: row.features ? row.features.split(';') : ['Highly detailed sculpt', 'Vibrant paint application'],
             image: row.image || '/images/cyber_valkyrie.png',
@@ -389,6 +390,7 @@ function renderProducts() {
       <div class="product-img-wrapper">
         <div class="product-img${extraClass}" style="background-image: url('${product.image}');" role="img" aria-label="${product.name}"></div>
         <span class="product-scale">${product.scale}</span>
+        ${!product.inStock ? '<span class="product-scale" style="top: auto; bottom: 10px; right: 10px; left: auto; background: #e74c3c;">Out of Stock</span>' : ''}
       </div>
       <div class="product-info">
         <h3>${product.name}</h3>
@@ -481,16 +483,40 @@ function openProductModal(product) {
   // Open overlay
   productModal.classList.add('active');
   document.body.style.overflow = 'hidden'; // stop page scrolling in background
+  
+  // Stock Status
+  const stockStatusEl = document.getElementById('modal-stock-status');
+  if (stockStatusEl) {
+    if (product.inStock) {
+      stockStatusEl.textContent = 'In Stock';
+      stockStatusEl.style.background = '#2ecc71';
+    } else {
+      stockStatusEl.textContent = 'Out of Stock';
+      stockStatusEl.style.background = '#e74c3c';
+    }
+  }
 
   // Setup Add to Cart button
   const addToCartBtn = document.getElementById('modal-add-to-cart');
   // Remove old listeners
   const newAddToCartBtn = addToCartBtn.cloneNode(true);
   addToCartBtn.parentNode.replaceChild(newAddToCartBtn, addToCartBtn);
-  newAddToCartBtn.addEventListener('click', () => {
-    addToCart(product);
-    closeProductModal();
-  });
+  
+  if (!product.inStock) {
+    newAddToCartBtn.disabled = true;
+    newAddToCartBtn.style.opacity = '0.5';
+    newAddToCartBtn.style.cursor = 'not-allowed';
+    newAddToCartBtn.textContent = 'Out of Stock';
+  } else {
+    newAddToCartBtn.disabled = false;
+    newAddToCartBtn.style.opacity = '1';
+    newAddToCartBtn.style.cursor = 'pointer';
+    newAddToCartBtn.textContent = 'Add to Cart';
+    newAddToCartBtn.addEventListener('click', () => {
+      addToCart(product);
+      closeProductModal();
+    });
+  }
 }
 
 function closeProductModal() {
@@ -600,7 +626,7 @@ function renderCart() {
     cartContainer.appendChild(row);
   });
 
-  cartTotalEl.textContent = \`₹\${total}\`;
+  cartTotalEl.textContent = `₹${total}`;
 
   document.querySelectorAll('.remove-item-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
