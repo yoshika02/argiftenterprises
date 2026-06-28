@@ -78,7 +78,7 @@ const productMetadata = {
 
 const generatedProducts = Array.from({ length: 24 }).flatMap((_, i) => {
   const pageNum = String(i + 3).padStart(4, '0');
-  const imageUrl = `./ilovepdf_pages-to-jpg/A.R%20ENTERPRISES%20WHOLESALE_pages-to-jpg-${pageNum}.jpg`;
+  const imageUrl = `/ilovepdf_pages-to-jpg/A.R%20ENTERPRISES%20WHOLESALE_pages-to-jpg-${pageNum}.jpg`;
   
   const idTop = String(1001 + (i * 2));
   const idBottom = String(1002 + (i * 2));
