@@ -110,9 +110,18 @@ async function fetchCatalogFromGoogleSheets() {
       skipEmptyLines: true,
       complete: function(results) {
         if (results.data && results.data.length > 0) {
+          // Map numeric category IDs (1,2,3) from the sheet to our string IDs
+          const categoryMap = {
+            '1': 'anime-figurines',
+            '2': 'car-dashboard',
+            '3': 'katana',
+            'anime-figurines': 'anime-figurines',
+            'car-dashboard': 'car-dashboard',
+            'katana': 'katana'
+          };
           products = results.data.map(row => ({
             id: row.id || Math.random().toString(),
-            categoryId: row.categoryId || 'ar-gift-collection',
+            categoryId: categoryMap[String(row.categoryId || '').trim()] || 'anime-figurines',
             name: row.name || 'Unknown Product',
             scale: row.scale || 'Assorted',
             material: row.material || 'Premium PVC/ABS',
@@ -418,11 +427,17 @@ function renderProducts() {
       <div class="product-info">
         <h3>${product.name}</h3>
         <p class="product-desc-short">${product.description}</p>
-        <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+        <div class="qty-row" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; ${!product.inStock ? 'opacity:0.4;pointer-events:none;' : ''}">
+          <button class="qty-btn qty-minus" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+          <span class="qty-value" style="min-width:36px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:1rem;">1</span>
+          <button class="qty-btn qty-plus" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+          <span style="font-size:0.8rem;color:var(--text-secondary);margin-left:auto;">max 1000</span>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
           <button class="btn-secondary view-details-btn" style="flex: 1; justify-content: center; padding: 0.5rem;">
             Details
           </button>
-          <button class="btn-primary add-to-cart-btn" style="flex: 1; justify-content: center; padding: 0.5rem;" ${!product.inStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+          <button class="btn-primary add-to-cart-btn" style="flex: 1; justify-content: center; padding: 0.5rem;" ${!product.inStock ? 'disabled' : ''}>
             ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
           </button>
         </div>
@@ -434,12 +449,26 @@ function renderProducts() {
       openProductModal(product);
     });
 
-    // Add to cart handler
+    // Quantity +/- handlers
+    let qty = 1;
+    const qtyValueEl = card.querySelector('.qty-value');
+    card.querySelector('.qty-minus').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (qty > 1) { qty--; qtyValueEl.textContent = qty; }
+    });
+    card.querySelector('.qty-plus').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (qty < 1000) { qty++; qtyValueEl.textContent = qty; }
+    });
+
+    // Add to cart handler (uses selected qty)
     const addToCartBtn = card.querySelector('.add-to-cart-btn');
     if (product.inStock && addToCartBtn) {
       addToCartBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        addToCart(product);
+        addToCart(product, qty);
+        qty = 1;
+        qtyValueEl.textContent = '1';
       });
     }
 
@@ -625,24 +654,33 @@ function showToast(message) {
   }, 2500);
 }
 
-function addToCart(product) {
+function addToCart(product, qty = 1) {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   if (totalItems >= CART_MAX) {
     showToast('Cart is full! Maximum 1000 items.');
     return;
   }
+  const allowed = Math.min(qty, CART_MAX - totalItems);
   const existingItem = cart.find(item => item.product.id === product.id);
   if (existingItem) {
-    existingItem.quantity += 1;
+    existingItem.quantity += allowed;
   } else {
-    cart.push({ product, quantity: 1 });
+    cart.push({ product, quantity: allowed });
   }
   updateCartUI();
-  showToast(`✓ ${product.name} added to cart!`);
+  showToast(`✓ ${allowed}x ${product.name} added to cart!`);
 }
 
 function removeFromCart(productId) {
   cart = cart.filter(item => item.product.id !== productId);
+  updateCartUI();
+}
+
+function changeCartQty(productId, delta) {
+  const item = cart.find(i => i.product.id === productId);
+  if (!item) return;
+  const totalOther = cart.reduce((sum, i) => i.product.id === productId ? sum : sum + i.quantity, 0);
+  item.quantity = Math.max(1, Math.min(CART_MAX - totalOther, item.quantity + delta));
   updateCartUI();
 }
 
@@ -668,7 +706,7 @@ function renderCart() {
   if (!cartContainer || !cartTotalEl) return;
 
   if (cart.length === 0) {
-    cartContainer.innerHTML = '<p>Your cart is currently empty.</p>';
+    cartContainer.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">Your cart is currently empty.</p>';
     cartTotalEl.textContent = '₹0';
     return;
   }
@@ -676,28 +714,30 @@ function renderCart() {
   let total = 0;
   cartContainer.innerHTML = '';
   cart.forEach(item => {
-    const itemTotal = item.quantity * parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
+    const priceNum = parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
+    const itemTotal = item.quantity * priceNum;
     total += itemTotal;
 
     const row = document.createElement('div');
-    row.style.display = 'flex';
-    row.style.justifyContent = 'space-between';
-    row.style.alignItems = 'center';
-    row.style.marginBottom = '1rem';
-    row.style.paddingBottom = '1rem';
-    row.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.1);gap:1rem;flex-wrap:wrap;';
 
     row.innerHTML = `
-      <div style="display:flex; align-items:center; gap: 1rem;">
-        <div style="width: 50px; height: 50px; background-image: url('${item.product.image}'); background-size: cover; background-position: center; border-radius: 4px;"></div>
-        <div>
-          <h4 style="margin: 0; font-family: var(--font-head);">${item.product.name}</h4>
-          <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">₹${item.product.price} x ${item.quantity}</p>
+      <div style="display:flex; align-items:center; gap: 1rem; flex:1; min-width:0;">
+        <div style="width:55px;height:55px;min-width:55px;background-image:url('${item.product.image}');background-size:cover;background-position:center;border-radius:8px;border:1px solid var(--border-light);"></div>
+        <div style="min-width:0;">
+          <h4 style="margin:0;font-family:var(--font-head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.product.name}</h4>
+          <p style="margin:0;font-size:0.85rem;color:var(--text-secondary);">₹${item.product.price} each</p>
         </div>
       </div>
-      <div>
-        <span style="margin-right: 1rem; font-weight: bold;">₹${itemTotal}</span>
-        <button class="remove-item-btn btn-secondary" data-id="${item.product.id}" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">Remove</button>
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
+        <button class="cart-qty-btn cart-minus" data-id="${item.product.id}"
+          style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
+        <span style="min-width:28px;text-align:center;font-family:var(--font-head);font-weight:700;">${item.quantity}</span>
+        <button class="cart-qty-btn cart-plus" data-id="${item.product.id}"
+          style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
+        <span style="min-width:60px;text-align:right;font-weight:700;">₹${itemTotal}</span>
+        <button class="remove-item-btn btn-secondary" data-id="${item.product.id}"
+          style="padding:0.25rem 0.65rem;font-size:0.75rem;border-radius:20px;">✕</button>
       </div>
     `;
     cartContainer.appendChild(row);
@@ -705,9 +745,13 @@ function renderCart() {
 
   cartTotalEl.textContent = `₹${total}`;
 
+  document.querySelectorAll('.cart-minus').forEach(btn => {
+    btn.addEventListener('click', () => changeCartQty(btn.getAttribute('data-id'), -1));
+  });
+  document.querySelectorAll('.cart-plus').forEach(btn => {
+    btn.addEventListener('click', () => changeCartQty(btn.getAttribute('data-id'), 1));
+  });
   document.querySelectorAll('.remove-item-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      removeFromCart(e.target.getAttribute('data-id'));
-    });
+    btn.addEventListener('click', () => removeFromCart(btn.getAttribute('data-id')));
   });
 }
