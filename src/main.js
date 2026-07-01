@@ -7,7 +7,7 @@ import { categories as defaultCategories, products as defaultProducts } from './
 // 1. Create a Google Sheet with headers: id, categoryId, name, scale, price, image, features
 // 2. Click File -> Share -> Publish to Web -> Choose "CSV"
 // 3. Paste the provided URL inside the quotes below:
-const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTEFznVDcaAh0CMr-LkohgGJbrU558T8UznG89QcXmmx9aD6COerjzLNcD2qIN5JJj7sgvWej3f2ILb/pub?output=csv"; 
+const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/1TjVX-4f6B039tb4URvacKMPDgy8C6Z5p_bz07qlRN9k/edit?usp=sharing"; 
 
 // DOM Elements
 const views = document.querySelectorAll('.view');
@@ -81,6 +81,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Fetch Data from Google Sheets CSV
+function getDirectImageUrl(url) {
+  if (!url) return '/images/cyber_valkyrie.png';
+  let match = url.match(/\\/file\\/d\\/([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  match = url.match(/id=([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  return url;
+}
+
 async function fetchCatalogFromGoogleSheets() {
   return new Promise((resolve) => {
     Papa.parse(GOOGLE_SHEETS_CSV_URL, {
@@ -101,7 +110,7 @@ async function fetchCatalogFromGoogleSheets() {
             inStock: row.inStock ? (row.inStock.toLowerCase() === 'true' || row.inStock.toLowerCase() === 'yes' || row.inStock.toLowerCase() === 'in stock') : true,
             description: `Size: ${row.scale || 'N/A'} | Price: ₹${row.price || 'TBD'}`,
             features: row.features ? row.features.split(';') : ['Highly detailed sculpt', 'Vibrant paint application'],
-            image: row.image || '/images/cyber_valkyrie.png',
+            image: getDirectImageUrl(row.image),
             cropClass: '' // Real uploaded photos don't need CSS cropping!
           }));
         }
@@ -395,9 +404,14 @@ function renderProducts() {
       <div class="product-info">
         <h3>${product.name}</h3>
         <p class="product-desc-short">${product.description}</p>
-        <button class="btn-secondary view-details-btn" style="width: 100%; justify-content: center; margin-top: auto;">
-          View Masterpiece Details
-        </button>
+        <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+          <button class="btn-secondary view-details-btn" style="flex: 1; justify-content: center; padding: 0.5rem;">
+            Details
+          </button>
+          <button class="btn-primary add-to-cart-btn" style="flex: 1; justify-content: center; padding: 0.5rem;" ${!product.inStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+            ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
+          </button>
+        </div>
       </div>
     `;
 
@@ -405,6 +419,15 @@ function renderProducts() {
     card.querySelector('.view-details-btn').addEventListener('click', () => {
       openProductModal(product);
     });
+
+    // Add to cart handler
+    const addToCartBtn = card.querySelector('.add-to-cart-btn');
+    if (product.inStock && addToCartBtn) {
+      addToCartBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        addToCart(product);
+      });
+    }
 
     catalogProductGrid.appendChild(card);
   });
