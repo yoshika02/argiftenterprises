@@ -82,11 +82,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Fetch Data from Google Sheets CSV
 function getDirectImageUrl(url) {
-  if (!url) return '/images/cyber_valkyrie.png';
-  let match = url.match(new RegExp("/file/d/([a-zA-Z0-9_-]+)"));
-  if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-  match = url.match(/id=([a-zA-Z0-9_-]+)/);
-  if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  if (!url || url.trim() === '') return '/images/cyber_valkyrie.png';
+  
+  // Extract Google Drive file ID from any Google Drive URL format:
+  // - https://drive.google.com/file/d/FILE_ID/view
+  // - https://drive.google.com/open?id=FILE_ID
+  // - https://drive.google.com/uc?id=FILE_ID
+  const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (fileMatch && fileMatch[1]) {
+    // lh3.googleusercontent.com is the most reliable way to embed Drive images
+    return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
+  }
+  const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idMatch && idMatch[1]) {
+    return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
+  }
+  
+  // Already a direct link or unknown format — use as-is
   return url;
 }
 
