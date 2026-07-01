@@ -7,7 +7,7 @@ import { categories as defaultCategories, products as defaultProducts } from './
 // 1. Create a Google Sheet with headers: id, categoryId, name, scale, price, image, features
 // 2. Click File -> Share -> Publish to Web -> Choose "CSV"
 // 3. Paste the provided URL inside the quotes below:
-const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/1TjVX-4f6B039tb4URvacKMPDgy8C6Z5p_bz07qlRN9k/edit?usp=sharing"; 
+const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/1TjVX-4f6B039tb4URvacKMPDgy8C6Z5p_bz07qlRN9k/export?format=csv"; 
 
 // DOM Elements
 const views = document.querySelectorAll('.view');
