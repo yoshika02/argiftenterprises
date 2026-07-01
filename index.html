@@ -34,7 +34,12 @@
           <li><a href="#" class="nav-item active" data-view="home-view" id="nav-home">Home</a></li>
           <li><a href="#" class="nav-item" data-view="catalog-view" id="nav-catalog">Catalog</a></li>
           <li><a href="#" class="nav-item" data-view="contact-view" id="nav-contact">Inquiries</a></li>
-          <li><a href="#" class="nav-item cart-item" data-view="cart-view" id="nav-cart">Cart <span id="cart-count">(0)</span></a></li>
+          <li>
+            <a href="#" class="nav-item cart-item" data-view="cart-view" id="nav-cart">
+              🛒 Cart <span id="cart-count">(0)</span>
+            </a>
+            <span id="cart-countdown" style="display:none; font-family:var(--font-head); font-size:0.78rem; font-weight:700; color:#ff6600; background:rgba(255,102,0,0.12); border:1px solid rgba(255,102,0,0.3); padding:0.2rem 0.6rem; border-radius:50px; margin-left:0.4rem; vertical-align:middle;">⏳ 15:00</span>
+          </li>
         </ul>
       </nav>
       <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">

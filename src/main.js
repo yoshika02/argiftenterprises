@@ -634,6 +634,52 @@ function initFormEvents() {
 
 // Cart Functionality
 const CART_MAX = 1000;
+const CART_RESERVATION_SECONDS = 15 * 60; // 15 minutes
+let cartCountdownInterval = null;
+let cartCountdownSeconds = 0;
+
+function startCartCountdown() {
+  // Reset to 15 minutes whenever something is added
+  cartCountdownSeconds = CART_RESERVATION_SECONDS;
+  const countdownEl = document.getElementById('cart-countdown');
+  if (countdownEl) countdownEl.style.display = 'inline';
+
+  // Clear any existing interval
+  if (cartCountdownInterval) clearInterval(cartCountdownInterval);
+
+  cartCountdownInterval = setInterval(() => {
+    cartCountdownSeconds--;
+    const mins = Math.floor(cartCountdownSeconds / 60);
+    const secs = cartCountdownSeconds % 60;
+    const display = `⏳ ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+
+    if (countdownEl) {
+      countdownEl.textContent = display;
+      // Turn red in last 2 minutes
+      countdownEl.style.color = cartCountdownSeconds <= 120 ? '#e74c3c' : '#ff6600';
+      countdownEl.style.borderColor = cartCountdownSeconds <= 120 ? 'rgba(231,76,60,0.4)' : 'rgba(255,102,0,0.3)';
+    }
+
+    if (cartCountdownSeconds <= 0) {
+      clearInterval(cartCountdownInterval);
+      cartCountdownInterval = null;
+      // Cart expired — clear it
+      cart = [];
+      updateCartUI();
+      if (countdownEl) countdownEl.style.display = 'none';
+      showToast('⏰ Cart reservation expired! Items have been removed.');
+    }
+  }, 1000);
+}
+
+function stopCartCountdown() {
+  if (cartCountdownInterval) {
+    clearInterval(cartCountdownInterval);
+    cartCountdownInterval = null;
+  }
+  const countdownEl = document.getElementById('cart-countdown');
+  if (countdownEl) countdownEl.style.display = 'none';
+}
 
 function showToast(message) {
   let toast = document.getElementById('cart-toast');
@@ -674,12 +720,14 @@ function addToCart(product, qty = 1) {
   } else {
     cart.push({ product, quantity: allowed });
   }
+  startCartCountdown(); // start/reset 15-min reservation timer
   updateCartUI();
   showToast(`✓ ${allowed}x ${product.name} added to cart!`);
 }
 
 function removeFromCart(productId) {
   cart = cart.filter(item => item.product.id !== productId);
+  if (cart.length === 0) stopCartCountdown(); // stop timer when cart is empty
   updateCartUI();
 }
 
