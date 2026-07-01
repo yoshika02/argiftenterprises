@@ -1,33 +1,27 @@
 export const categories = [
   {
     id: 'anime-figurines',
+    number: 1,
     name: 'Anime Figurines',
-    description: 'Masterfully crafted 1/7 scale figures featuring dynamic poses, vibrant coloring, and hand-finished details.',
+    description: 'Masterfully crafted scale figures featuring dynamic poses, vibrant coloring, and hand-finished details.',
     image: '/images/cyber_valkyrie.png',
     active: true
   },
   {
-    id: 'ar-gift-collection',
-    name: 'A.R. Gift Collection',
-    description: 'Premium wholesale toy collections and custom enterprise solutions.',
+    id: 'car-dashboard',
+    number: 2,
+    name: 'Car Dashboard',
+    description: 'Premium car dashboard accessories, decorations, and custom collectibles for automotive enthusiasts.',
     image: '/images/cyber_valkyrie.png',
     active: true
   },
   {
-    id: 'action-figures',
-    name: 'Articulated Action Figures',
-    description: 'Fully posable premium action figures with heavy metal joints, custom weaponry, and interchangeable parts.',
-    image: '/images/aeronaut_captain.png',
-    active: false,
-    comingSoon: true
-  },
-  {
-    id: 'designer-toys',
-    name: 'Designer Plush & Vinyl',
-    description: 'Limited edition art toys, soft plush collectibles, and vinyl figurines designed by leading industry artists.',
-    image: '/images/mage_emperor.png',
-    active: false,
-    comingSoon: true
+    id: 'katana',
+    number: 3,
+    name: 'Katana',
+    description: 'Detailed katana replicas, decorative swords, and samurai collectibles with authentic craftsmanship.',
+    image: '/images/cyber_valkyrie.png',
+    active: true
   }
 ];
 
