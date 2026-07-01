@@ -194,18 +194,20 @@ header {
 }
 
 .logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0;
   font-family: var(--font-head);
   font-size: 1.5rem;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
 }
 
 .logo span {
   color: var(--accent-cyan);
   text-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+  margin-right: 0.3rem;
 }
 
 .nav-links {

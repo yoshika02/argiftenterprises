@@ -212,14 +212,15 @@ function switchView(viewId) {
   });
 }
 
-// Render carousel for featured products on home page
+// Render carousel for featured products on home page (max 6)
 function renderCarousel() {
   if (!carouselTrack || !carouselIndicators) return;
   carouselTrack.innerHTML = '';
   carouselIndicators.innerHTML = '';
 
-  // Display all products in carousel
-  products.forEach((product, index) => {
+  // Show only first 6 products on the home page carousel
+  const featuredProducts = products.slice(0, 6);
+  featuredProducts.forEach((product, index) => {
     // Create carousel slide
     const slide = document.createElement('div');
     slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
@@ -230,14 +231,18 @@ function renderCarousel() {
     slide.innerHTML = `
       <div class="carousel-content">
         <div class="carousel-image">
-          <div class="carousel-img${extraClass}" style="background-image: url('${product.image}');" role="img" aria-label="${product.name}"></div>
+          <div class="carousel-img-wrap" style="width:100%;height:100%;overflow:hidden;border-radius:12px;">
+            <img src="${product.image}" alt="${product.name}"
+              style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;"
+              onerror="this.style.display='none'" />
+          </div>
           <span class="carousel-scale">${product.scale}</span>
         </div>
         <div class="carousel-details">
           <h3>${product.name}</h3>
           <p>${product.description}</p>
           <button class="btn-primary view-carousel-details" style="justify-content: center;">
-            View Details & Request Quote
+            View Details &amp; Request Quote
           </button>
         </div>
       </div>
@@ -286,12 +291,14 @@ function initCarouselControls() {
 }
 
 function nextCarouselSlide() {
-  currentCarouselIndex = (currentCarouselIndex + 1) % products.length;
+  const slideCount = carouselTrack.querySelectorAll('.carousel-slide').length;
+  currentCarouselIndex = (currentCarouselIndex + 1) % slideCount;
   updateCarouselPosition();
 }
 
 function previousCarouselSlide() {
-  currentCarouselIndex = (currentCarouselIndex - 1 + products.length) % products.length;
+  const slideCount = carouselTrack.querySelectorAll('.carousel-slide').length;
+  currentCarouselIndex = (currentCarouselIndex - 1 + slideCount) % slideCount;
   updateCarouselPosition();
 }
 
