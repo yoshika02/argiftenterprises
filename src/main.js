@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Fetch Data from Google Sheets CSV
 function getDirectImageUrl(url) {
   if (!url) return '/images/cyber_valkyrie.png';
-  let match = url.match(/\\/file\\/d\\/([a-zA-Z0-9_-]+)/);
+  let match = url.match(new RegExp("/file/d/([a-zA-Z0-9_-]+)"));
   if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
   match = url.match(/id=([a-zA-Z0-9_-]+)/);
   if (match && match[1]) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
