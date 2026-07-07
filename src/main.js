@@ -757,12 +757,27 @@ function updateCartUI() {
 
 function renderCart() {
   const cartContainer = document.getElementById('cart-items-container');
-  const cartTotalEl = document.getElementById('cart-total-price');
+  const cartTotalEl   = document.getElementById('cart-total-price');
+  const checkoutBtn   = document.getElementById('checkout-btn');
+  const progressEl    = document.getElementById('min-order-progress');
+  const labelEl       = document.getElementById('min-order-label');
+  const msgEl         = document.getElementById('min-order-msg');
+  const MIN_ORDER     = 5000;
+
   if (!cartContainer || !cartTotalEl) return;
 
   if (cart.length === 0) {
-    cartContainer.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem;">Your cart is currently empty.</p>';
+    cartContainer.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem 0;">Your cart is currently empty. Add items from the Catalog!</p>';
     cartTotalEl.textContent = '₹0';
+    if (progressEl) progressEl.style.width = '0%';
+    if (labelEl)    labelEl.textContent = '₹0 / ₹5,000';
+    if (msgEl)      msgEl.textContent = 'Add items to start your wholesale order.';
+    if (checkoutBtn) {
+      checkoutBtn.disabled = true;
+      checkoutBtn.style.opacity = '0.45';
+      checkoutBtn.style.cursor = 'not-allowed';
+      checkoutBtn.textContent = '🔒 Min ₹5,000 Required';
+    }
     return;
   }
 
@@ -774,11 +789,11 @@ function renderCart() {
     total += itemTotal;
 
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.1);gap:1rem;flex-wrap:wrap;';
+    row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,153,0,0.12);gap:1rem;flex-wrap:wrap;';
 
     row.innerHTML = `
-      <div style="display:flex; align-items:center; gap: 1rem; flex:1; min-width:0;">
-        <div style="width:55px;height:55px;min-width:55px;background-image:url('${item.product.image}');background-size:cover;background-position:center;border-radius:8px;border:1px solid var(--border-light);"></div>
+      <div style="display:flex;align-items:center;gap:1rem;flex:1;min-width:0;">
+        <div style="width:55px;height:55px;min-width:55px;background-image:url('${item.product.image}');background-size:cover;background-position:center top;border-radius:8px;border:1px solid rgba(255,153,0,0.2);"></div>
         <div style="min-width:0;">
           <h4 style="margin:0;font-family:var(--font-head);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.product.name}</h4>
           <p style="margin:0;font-size:0.85rem;color:var(--text-secondary);">₹${item.product.price} each</p>
@@ -786,19 +801,51 @@ function renderCart() {
       </div>
       <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
         <button class="cart-qty-btn cart-minus" data-id="${item.product.id}"
-          style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
-        <span style="min-width:28px;text-align:center;font-family:var(--font-head);font-weight:700;">${item.quantity}</span>
+          style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.1);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">−</button>
+        <span style="min-width:30px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:1rem;">${item.quantity}</span>
         <button class="cart-qty-btn cart-plus" data-id="${item.product.id}"
-          style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
-        <span style="min-width:60px;text-align:right;font-weight:700;">₹${itemTotal}</span>
+          style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.1);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">+</button>
+        <span style="min-width:65px;text-align:right;font-weight:700;color:#ff6600;">₹${itemTotal}</span>
         <button class="remove-item-btn btn-secondary" data-id="${item.product.id}"
-          style="padding:0.25rem 0.65rem;font-size:0.75rem;border-radius:20px;">✕</button>
+          style="padding:0.25rem 0.7rem;font-size:0.8rem;border-radius:20px;">✕</button>
       </div>
     `;
     cartContainer.appendChild(row);
   });
 
-  cartTotalEl.textContent = `₹${total}`;
+  // Update total
+  cartTotalEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+
+  // Update progress bar
+  const pct = Math.min(100, (total / MIN_ORDER) * 100);
+  if (progressEl) progressEl.style.width = `${pct}%`;
+  if (labelEl)    labelEl.textContent = `₹${total.toLocaleString('en-IN')} / ₹5,000`;
+
+  const remaining = MIN_ORDER - total;
+  if (msgEl) {
+    if (total >= MIN_ORDER) {
+      msgEl.textContent = '✅ Minimum order reached! You can proceed to checkout.';
+      msgEl.style.color = '#2ecc71';
+    } else {
+      msgEl.textContent = `Add ₹${remaining.toLocaleString('en-IN')} more to unlock checkout.`;
+      msgEl.style.color = 'var(--text-secondary)';
+    }
+  }
+
+  // Enable / disable checkout button
+  if (checkoutBtn) {
+    if (total >= MIN_ORDER) {
+      checkoutBtn.disabled = false;
+      checkoutBtn.style.opacity = '1';
+      checkoutBtn.style.cursor = 'pointer';
+      checkoutBtn.innerHTML = '✅ Proceed to Checkout';
+    } else {
+      checkoutBtn.disabled = true;
+      checkoutBtn.style.opacity = '0.45';
+      checkoutBtn.style.cursor = 'not-allowed';
+      checkoutBtn.innerHTML = `🔒 Add ₹${remaining.toLocaleString('en-IN')} more`;
+    }
+  }
 
   document.querySelectorAll('.cart-minus').forEach(btn => {
     btn.addEventListener('click', () => changeCartQty(btn.getAttribute('data-id'), -1));
