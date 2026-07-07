@@ -1,31 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Background */
-  --bg-dark: #0d0a07;
-  --bg-card: rgba(30, 20, 10, 0.75);
-  --bg-card-hover: rgba(45, 28, 10, 0.9);
+  /* White & Orange Theme */
+  --bg-dark:       #ffffff;
+  --bg-card:       #fff7f0;
+  --bg-card-hover: #fff0e0;
+  --border-light:  rgba(255, 102, 0, 0.2);
+  --border-glow:   rgba(255, 102, 0, 0.5);
 
-  /* Borders */
-  --border-light: rgba(255, 140, 0, 0.18);
-  --border-glow:  rgba(255, 102, 0, 0.45);
-
-  /* Orange & White brand palette */
+  /* Orange brand palette */
   --accent-orange:  #ff6600;
   --accent-deep:    #e05000;
   --accent-bright:  #ff8c00;
-  --accent-gold:    #ffcc00;
-  --accent-cyan:    #ff6600; /* kept for legacy references */
-  --accent-indigo:  #cc3300; /* kept for legacy references */
+  --accent-gold:    #ffaa00;
+  --accent-cyan:    #ff6600;
+  --accent-indigo:  #cc3300;
 
-  --text-main:      #ffffff;
-  --text-secondary: #ffcba3;
-  --text-muted:     #a07050;
+  --text-main:      #1a0a00;
+  --text-secondary: #6b3a1f;
+  --text-muted:     #b06030;
 
   /* Gradients */
-  --grad-primary: linear-gradient(135deg, #cc3300 0%, #ff6600 50%, #ff8c00 100%);
-  --grad-dark:    linear-gradient(180deg, #130d05 0%, #0d0a07 100%);
-  --grad-glow:    radial-gradient(circle, rgba(255, 102, 0, 0.18) 0%, rgba(204, 51, 0, 0) 70%);
+  --grad-primary: linear-gradient(135deg, #cc3300 0%, #ff6600 60%, #ff8c00 100%);
+  --grad-dark:    linear-gradient(180deg, #fff7f0 0%, #ffffff 100%);
+  --grad-glow:    radial-gradient(circle, rgba(255, 102, 0, 0.12) 0%, rgba(255,255,255,0) 70%);
 
   /* Typography */
   --font-head: 'Outfit', sans-serif;
@@ -73,7 +71,7 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--bg-dark);
+  background-color: #ffffff;
   color: var(--text-main);
   font-family: var(--font-body);
   line-height: 1.6;
@@ -81,7 +79,7 @@ html {
 
 body {
   overflow-x: hidden;
-  background-image: var(--grad-dark);
+  background: #ffffff;
   min-height: 100vh;
 }
 
@@ -114,11 +112,11 @@ textarea {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-dark);
+  background: #f0e8e0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e1e2f;
+  background: #ffcba3;
   border-radius: 4px;
 }
 
@@ -144,29 +142,29 @@ textarea {
   align-items: center;
   gap: 0.5rem;
   background: var(--grad-primary);
-  color: #000;
+  color: #fff;
   font-family: var(--font-head);
   font-weight: 700;
   padding: 0.8rem 1.8rem;
   border-radius: 50px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
   transition: var(--transition-smooth);
 }
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 25px rgba(255, 102, 0, 0.6);
+  box-shadow: 0 6px 25px rgba(255, 102, 0, 0.5);
 }
 
 .btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-main);
-  border: 1px solid var(--border-light);
+  background: #fff;
+  color: var(--accent-deep);
+  border: 2px solid rgba(255, 102, 0, 0.35);
   font-family: var(--font-head);
   font-weight: 600;
   padding: 0.8rem 1.8rem;
@@ -176,21 +174,22 @@ textarea {
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #fff3eb;
   border-color: var(--accent-cyan);
 }
 
 /* Header & Navigation */
 header {
   position: fixed;
-  top: 0;
+  top: 36px;  /* sits below the 36px announcement bar */
   left: 0;
   width: 100%;
   z-index: 100;
-  background: rgba(5, 5, 8, 0.7);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 2px solid rgba(255, 102, 0, 0.25);
+  box-shadow: 0 2px 20px rgba(255, 102, 0, 0.08);
 }
 
 .nav-container {
@@ -231,7 +230,7 @@ header {
 
 .nav-links a {
   font-family: var(--font-head);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1rem;
   color: var(--text-secondary);
   position: relative;
@@ -240,7 +239,7 @@ header {
 
 .nav-links a:hover,
 .nav-links a.active {
-  color: var(--text-main);
+  color: var(--accent-orange);
 }
 
 .nav-links a::after {
@@ -271,8 +270,7 @@ header {
 /* Views Management */
 .view {
   display: none;
-  padding-top: 100px;
-  /* offset fixed header */
+  padding-top: 132px; /* 36px bar + 80px header + 16px breathing room */
   animation: fadeIn 0.4s ease forwards;
 }
 
@@ -298,7 +296,7 @@ header {
   min-height: 85vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(rgba(5, 5, 8, 0.6), rgba(5, 5, 8, 0.95)), url('/images/hero_bg.png') no-repeat center center/cover;
+  background: linear-gradient(135deg, #fff7f0 0%, #ffe8d0 50%, #fff0e0 100%);
   overflow: hidden;
 }
 
@@ -345,7 +343,7 @@ header {
   font-size: 1.15rem;
   color: var(--text-secondary);
   margin-bottom: 2.5rem;
-  background: rgba(10, 10, 15, 0.4);
+  background: rgba(255, 102, 0, 0.07);
   backdrop-filter: blur(5px);
   padding: 1rem;
   border-radius: 8px;
@@ -398,9 +396,8 @@ header {
   border-radius: 20px;
   overflow: hidden;
   border: 1px solid var(--border-light);
-  background: var(--bg-card);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: #fff;
+  box-shadow: 0 4px 24px rgba(255, 102, 0, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;

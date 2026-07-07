@@ -435,10 +435,9 @@ function renderProducts() {
         <h3>${product.name}</h3>
         <p class="product-desc-short">${product.description}</p>
         <div class="qty-row" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; ${!product.inStock ? 'opacity:0.4;pointer-events:none;' : ''}">
-          <button class="qty-btn qty-minus" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">−</button>
-          <span class="qty-value" style="min-width:36px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:1rem;">1</span>
-          <button class="qty-btn qty-plus" style="width:32px;height:32px;border-radius:50%;border:1px solid var(--border-light);background:rgba(255,255,255,0.05);color:#fff;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">+</button>
-          <span style="font-size:0.8rem;color:var(--text-secondary);margin-left:auto;">max 1000</span>
+          <button class="qty-btn qty-minus" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">−</button>
+          <span class="qty-value" style="min-width:36px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:1rem;color:#1a0a00;">1</span>
+          <button class="qty-btn qty-plus" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">+</button>
         </div>
         <div style="display: flex; gap: 0.5rem;">
           <button class="btn-secondary view-details-btn" style="flex: 1; justify-content: center; padding: 0.5rem;">
