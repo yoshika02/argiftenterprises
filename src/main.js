@@ -434,20 +434,18 @@ function renderProducts() {
       <div class="product-info">
         <h3>${product.name}</h3>
         <p class="product-desc-short">${product.description}</p>
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem;">
-          <div class="qty-row" style="display: flex; align-items: center; gap: 0.4rem; ${!product.inStock ? 'opacity:0.4;pointer-events:none;' : ''}">
-            <button class="qty-btn qty-minus" style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0;">−</button>
-            <span class="qty-value" style="min-width:24px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:0.95rem;color:#1a0a00;">1</span>
-            <button class="qty-btn qty-plus" style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0;">+</button>
-          </div>
-          <div style="display: flex; gap: 0.4rem; flex: 1; min-width: 160px;">
-            <button class="btn-secondary view-details-btn" style="flex: 1; justify-content: center; padding: 0.5rem 0.2rem; font-size: 0.85rem;">
-              Details
-            </button>
-            <button class="btn-primary add-to-cart-btn" style="flex: 1.5; justify-content: center; padding: 0.5rem 0.2rem; font-size: 0.85rem; white-space: nowrap;" ${!product.inStock ? 'disabled' : ''}>
-              ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
-            </button>
-          </div>
+        <div class="qty-row" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; ${!product.inStock ? 'opacity:0.4;pointer-events:none;' : ''}">
+          <button class="qty-btn qty-minus" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">−</button>
+          <span class="qty-value" style="min-width:36px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:1rem;color:#1a0a00;">1</span>
+          <button class="qty-btn qty-plus" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">+</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-secondary view-details-btn" style="flex: 1; justify-content: center; padding: 0.5rem; font-size: 0.85rem;">
+            Details
+          </button>
+          <button class="btn-primary add-to-cart-btn" style="flex: 1.5; justify-content: center; padding: 0.5rem; font-size: 0.85rem;" ${!product.inStock ? 'disabled' : ''}>
+            ${product.inStock ? 'Add to Cart' : 'Out'}
+          </button>
         </div>
       </div>
     `;
