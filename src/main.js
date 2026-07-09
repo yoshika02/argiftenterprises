@@ -434,18 +434,20 @@ function renderProducts() {
       <div class="product-info">
         <h3>${product.name}</h3>
         <p class="product-desc-short">${product.description}</p>
-        <div class="qty-row" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; ${!product.inStock ? 'opacity:0.4;pointer-events:none;' : ''}">
-          <button class="qty-btn qty-minus" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">−</button>
-          <span class="qty-value" style="min-width:36px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:1rem;color:#1a0a00;">1</span>
-          <button class="qty-btn qty-plus" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">+</button>
-        </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button class="btn-secondary view-details-btn" style="flex: 1; justify-content: center; padding: 0.5rem;">
-            Details
-          </button>
-          <button class="btn-primary add-to-cart-btn" style="flex: 1; justify-content: center; padding: 0.5rem;" ${!product.inStock ? 'disabled' : ''}>
-            ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
-          </button>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.5rem;">
+          <div class="qty-row" style="display: flex; align-items: center; gap: 0.4rem; ${!product.inStock ? 'opacity:0.4;pointer-events:none;' : ''}">
+            <button class="qty-btn qty-minus" style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0;">−</button>
+            <span class="qty-value" style="min-width:24px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:0.95rem;color:#1a0a00;">1</span>
+            <button class="qty-btn qty-plus" style="width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;padding:0;">+</button>
+          </div>
+          <div style="display: flex; gap: 0.4rem; flex: 1; min-width: 160px;">
+            <button class="btn-secondary view-details-btn" style="flex: 1; justify-content: center; padding: 0.5rem 0.2rem; font-size: 0.85rem;">
+              Details
+            </button>
+            <button class="btn-primary add-to-cart-btn" style="flex: 1.5; justify-content: center; padding: 0.5rem 0.2rem; font-size: 0.85rem; white-space: nowrap;" ${!product.inStock ? 'disabled' : ''}>
+              ${product.inStock ? 'Add to Cart' : 'Out of Stock'}
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -855,4 +857,166 @@ function renderCart() {
   document.querySelectorAll('.remove-item-btn').forEach(btn => {
     btn.addEventListener('click', () => removeFromCart(btn.getAttribute('data-id')));
   });
+
+  // Checkout button → go to checkout view
+  const checkoutBtn = document.getElementById('checkout-btn');
+  if (checkoutBtn && !checkoutBtn._listenerAdded) {
+    checkoutBtn._listenerAdded = true;
+    checkoutBtn.addEventListener('click', () => {
+      if (!checkoutBtn.disabled) openCheckoutView();
+    });
+  }
+}
+
+// ==========================================
+// GOOGLE APPS SCRIPT — ORDER SUBMISSION
+// ==========================================
+// SETUP INSTRUCTIONS:
+// 1. Go to script.google.com → New project
+// 2. Paste the Apps Script code from the guide below
+// 3. Deploy as Web App (Anyone can access)
+// 4. Replace the URL below with your deployed Apps Script URL
+const ORDERS_SCRIPT_URL = ""; // ← PASTE YOUR APPS SCRIPT WEB APP URL HERE
+
+async function submitOrderToSheet(orderData) {
+  if (!ORDERS_SCRIPT_URL || ORDERS_SCRIPT_URL.trim() === "") {
+    console.warn("ORDERS_SCRIPT_URL not set — skipping sheet submission");
+    return { success: true, skipped: true };
+  }
+  try {
+    const formData = new FormData();
+    Object.entries(orderData).forEach(([k, v]) => formData.append(k, v));
+    const res = await fetch(ORDERS_SCRIPT_URL, { method: 'POST', body: formData });
+    const text = await res.text();
+    return { success: true, response: text };
+  } catch (err) {
+    console.error("Sheet submission failed:", err);
+    return { success: false, error: err.message };
+  }
+}
+
+// ==========================================
+// CHECKOUT FLOW
+// ==========================================
+function openCheckoutView() {
+  // Populate checkout cart summary
+  const listEl   = document.getElementById('checkout-items-list');
+  const totalEl  = document.getElementById('checkout-total-display');
+  if (listEl) {
+    let total = 0;
+    listEl.innerHTML = cart.map(item => {
+      const price = parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
+      const sub = price * item.quantity;
+      total += sub;
+      return `<div style="display:flex;justify-content:space-between;">
+        <span>${item.product.name} × ${item.quantity}</span>
+        <span style="color:#ff6600;font-weight:600;">₹${sub.toLocaleString('en-IN')}</span>
+      </div>`;
+    }).join('');
+    if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+  }
+  switchView('checkout-view');
+
+  // Back to cart button
+  const backBtn = document.getElementById('back-to-cart-btn');
+  if (backBtn && !backBtn._listenerAdded) {
+    backBtn._listenerAdded = true;
+    backBtn.addEventListener('click', () => switchView('cart-view'));
+  }
+
+  // Order form submit
+  const orderForm = document.getElementById('order-form');
+  if (orderForm && !orderForm._listenerAdded) {
+    orderForm._listenerAdded = true;
+    orderForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const placeBtn = document.getElementById('place-order-btn');
+      placeBtn.textContent = '⏳ Sending...';
+      placeBtn.disabled = true;
+
+      const name     = document.getElementById('order-name').value.trim();
+      const phone    = document.getElementById('order-phone').value.trim();
+      const business = document.getElementById('order-business').value.trim();
+      const city     = document.getElementById('order-city').value.trim();
+      const notes    = document.getElementById('order-notes').value.trim();
+
+      // Build order summary string
+      let total = 0;
+      const itemLines = cart.map(item => {
+        const price = parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
+        const sub = price * item.quantity;
+        total += sub;
+        return `${item.product.name} x${item.quantity} = ₹${sub.toLocaleString('en-IN')}`;
+      });
+      const orderSummary = itemLines.join(' | ');
+      const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+
+      // Data to send to Google Sheet
+      const orderData = {
+        Timestamp:    timestamp,
+        Name:         name,
+        Phone:        phone,
+        Business:     business || '—',
+        City:         city,
+        Notes:        notes || '—',
+        OrderItems:   orderSummary,
+        OrderTotal:   `₹${total.toLocaleString('en-IN')}`,
+      };
+
+      // Submit to Google Sheet
+      await submitOrderToSheet(orderData);
+
+      // Build WhatsApp message
+      const waText = encodeURIComponent(
+        `🛒 *New Wholesale Order — A.R. GiftCollection*\n\n` +
+        `👤 Name: ${name}\n📞 Phone: ${phone}\n🏪 Business: ${business || '—'}\n📍 City: ${city}\n\n` +
+        `*Items:*\n${itemLines.join('\n')}\n\n` +
+        `💰 *Total: ₹${total.toLocaleString('en-IN')}*\n\n` +
+        (notes ? `📝 Notes: ${notes}` : '')
+      );
+
+      // Open WhatsApp
+      window.open(`https://wa.me/919811111111?text=${waText}`, '_blank');
+
+      // Show confirmation
+      showConfirmationPage(name, total);
+
+      // Clear cart
+      cart = [];
+      stopCartCountdown();
+      updateCartUI();
+
+      placeBtn.textContent = '✅ Place Order via WhatsApp';
+      placeBtn.disabled = false;
+    });
+  }
+}
+
+function showConfirmationPage(name, total) {
+  // Populate confirmation
+  const confirmItems = document.getElementById('confirm-items');
+  const confirmTotal = document.getElementById('confirm-total');
+  const confirmMsg   = document.getElementById('confirm-message');
+
+  if (confirmMsg) confirmMsg.textContent = `Thank you, ${name}! Our team will contact you on WhatsApp shortly to confirm your order.`;
+  if (confirmTotal) confirmTotal.textContent = `₹${total.toLocaleString('en-IN')}`;
+  if (confirmItems) {
+    confirmItems.innerHTML = cart.length > 0 ? cart.map(item => {
+      const price = parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
+      const sub = price * item.quantity;
+      return `<div style="display:flex;justify-content:space-between;">
+        <span>${item.product.name} × ${item.quantity}</span>
+        <span style="color:#ff6600;font-weight:600;">₹${sub.toLocaleString('en-IN')}</span>
+      </div>`;
+    }).join('') : '<p style="color:#a07050;">Order submitted successfully.</p>';
+  }
+
+  switchView('confirmation-view');
+
+  // Continue shopping button
+  const continueBtn = document.getElementById('continue-shopping-btn');
+  if (continueBtn && !continueBtn._listenerAdded) {
+    continueBtn._listenerAdded = true;
+    continueBtn.addEventListener('click', () => switchView('catalog-view'));
+  }
 }

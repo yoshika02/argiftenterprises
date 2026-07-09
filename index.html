@@ -284,6 +284,97 @@
         </div>
       </div>
     </section>
+
+    <!-- VIEW 5: CHECKOUT FORM -->
+    <section id="checkout-view" class="view">
+      <div class="container" style="max-width:680px;">
+        <div class="section-header">
+          <span class="section-tag">Almost There!</span>
+          <h2 class="section-title">Complete Your Order</h2>
+        </div>
+
+        <!-- Cart Summary Banner -->
+        <div id="checkout-cart-summary" style="background:#fff7f0; border:2px solid rgba(255,102,0,0.2); border-radius:14px; padding:1.25rem 1.5rem; margin-bottom:2rem;">
+          <p style="font-family:var(--font-head); font-size:0.85rem; color:#6b3a1f; margin-bottom:0.5rem; text-transform:uppercase; letter-spacing:1px;">Order Summary</p>
+          <div id="checkout-items-list" style="font-size:0.9rem; color:#1a0a00; line-height:1.8;"></div>
+          <div style="border-top:1px solid rgba(255,102,0,0.15); margin-top:0.75rem; padding-top:0.75rem; display:flex; justify-content:space-between;">
+            <strong style="font-family:var(--font-head); color:#1a0a00;">Total</strong>
+            <strong style="font-family:var(--font-head); color:#ff6600;" id="checkout-total-display">₹0</strong>
+          </div>
+        </div>
+
+        <!-- Order Form -->
+        <form id="order-form" style="background:#fff; border:1px solid rgba(255,102,0,0.15); border-radius:14px; padding:2rem; box-shadow:0 4px 24px rgba(255,102,0,0.07);">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+            <div>
+              <label style="font-family:var(--font-head); font-size:0.85rem; font-weight:700; color:#6b3a1f; display:block; margin-bottom:0.4rem;">Full Name *</label>
+              <input type="text" id="order-name" required placeholder="Your full name"
+                style="width:100%; padding:0.75rem 1rem; border:1.5px solid rgba(255,102,0,0.25); border-radius:8px; font-family:var(--font-body); font-size:0.95rem; color:#1a0a00; outline:none; transition:border-color 0.2s;"
+                onfocus="this.style.borderColor='#ff6600'" onblur="this.style.borderColor='rgba(255,102,0,0.25)'">
+            </div>
+            <div>
+              <label style="font-family:var(--font-head); font-size:0.85rem; font-weight:700; color:#6b3a1f; display:block; margin-bottom:0.4rem;">WhatsApp / Phone *</label>
+              <input type="tel" id="order-phone" required placeholder="+91 98765 43210"
+                style="width:100%; padding:0.75rem 1rem; border:1.5px solid rgba(255,102,0,0.25); border-radius:8px; font-family:var(--font-body); font-size:0.95rem; color:#1a0a00; outline:none; transition:border-color 0.2s;"
+                onfocus="this.style.borderColor='#ff6600'" onblur="this.style.borderColor='rgba(255,102,0,0.25)'">
+            </div>
+          </div>
+          <div style="margin-bottom:1rem;">
+            <label style="font-family:var(--font-head); font-size:0.85rem; font-weight:700; color:#6b3a1f; display:block; margin-bottom:0.4rem;">Business / Shop Name</label>
+            <input type="text" id="order-business" placeholder="Your shop or business name (optional)"
+              style="width:100%; padding:0.75rem 1rem; border:1.5px solid rgba(255,102,0,0.25); border-radius:8px; font-family:var(--font-body); font-size:0.95rem; color:#1a0a00; outline:none; transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='#ff6600'" onblur="this.style.borderColor='rgba(255,102,0,0.25)'">
+          </div>
+          <div style="margin-bottom:1rem;">
+            <label style="font-family:var(--font-head); font-size:0.85rem; font-weight:700; color:#6b3a1f; display:block; margin-bottom:0.4rem;">Delivery City / State *</label>
+            <input type="text" id="order-city" required placeholder="e.g. Mumbai, Maharashtra"
+              style="width:100%; padding:0.75rem 1rem; border:1.5px solid rgba(255,102,0,0.25); border-radius:8px; font-family:var(--font-body); font-size:0.95rem; color:#1a0a00; outline:none; transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='#ff6600'" onblur="this.style.borderColor='rgba(255,102,0,0.25)'">
+          </div>
+          <div style="margin-bottom:1.5rem;">
+            <label style="font-family:var(--font-head); font-size:0.85rem; font-weight:700; color:#6b3a1f; display:block; margin-bottom:0.4rem;">Notes / Special Instructions</label>
+            <textarea id="order-notes" rows="3" placeholder="Any special requirements, packaging notes..."
+              style="width:100%; padding:0.75rem 1rem; border:1.5px solid rgba(255,102,0,0.25); border-radius:8px; font-family:var(--font-body); font-size:0.95rem; color:#1a0a00; outline:none; resize:vertical; transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='#ff6600'" onblur="this.style.borderColor='rgba(255,102,0,0.25)'"></textarea>
+          </div>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <button type="button" id="back-to-cart-btn" class="btn-secondary" style="flex:1; justify-content:center;">← Back to Cart</button>
+            <button type="submit" id="place-order-btn" class="btn-primary" style="flex:2; justify-content:center; min-width:180px;">
+              ✅ Place Order via WhatsApp
+            </button>
+          </div>
+          <p style="text-align:center; font-size:0.8rem; color:#a07050; margin-top:1rem;">
+            Your order details will be sent to our team on WhatsApp &amp; saved for follow-up.
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 6: ORDER CONFIRMATION -->
+    <section id="confirmation-view" class="view">
+      <div class="container" style="max-width:600px; text-align:center; padding-top:3rem; padding-bottom:3rem;">
+        <div style="font-size:4rem; margin-bottom:1rem;">🎉</div>
+        <h2 style="font-family:var(--font-head); font-size:2rem; color:#1a0a00; margin-bottom:0.75rem;">Order Received!</h2>
+        <p style="color:#6b3a1f; font-size:1.05rem; margin-bottom:2rem;" id="confirm-message">
+          Thank you! Our team will contact you on WhatsApp to confirm your order.
+        </p>
+        <div id="confirm-order-box" style="background:#fff7f0; border:2px solid rgba(255,102,0,0.2); border-radius:14px; padding:1.5rem; margin-bottom:2rem; text-align:left;">
+          <p style="font-family:var(--font-head); font-size:0.8rem; color:#a07050; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.75rem;">Your Order</p>
+          <div id="confirm-items" style="font-size:0.92rem; color:#1a0a00; line-height:1.9;"></div>
+          <div style="border-top:1px solid rgba(255,102,0,0.15); margin-top:1rem; padding-top:0.75rem; display:flex; justify-content:space-between;">
+            <strong style="font-family:var(--font-head); color:#1a0a00;">Order Total</strong>
+            <strong style="font-family:var(--font-head); color:#ff6600;" id="confirm-total">₹0</strong>
+          </div>
+        </div>
+        <a href="https://chat.whatsapp.com/KDBjvt5BtJ9DUY1vb3DcW2" target="_blank" rel="noopener"
+          style="display:inline-block; background:#25d366; color:#fff; font-family:var(--font-head); font-weight:700; padding:0.9rem 2rem; border-radius:50px; text-decoration:none; margin-bottom:1rem; font-size:1rem;">
+          💬 Join Our WhatsApp Group
+        </a><br>
+        <button id="continue-shopping-btn" class="btn-secondary" style="margin-top:0.75rem;">
+          ← Continue Shopping
+        </button>
+      </div>
+    </section>
   </main>
 
   <!-- Detailed Product Modal Overlay (Drawer Style) -->
