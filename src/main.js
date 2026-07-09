@@ -859,7 +859,6 @@ function renderCart() {
   });
 
   // Checkout button → go to checkout view
-  const checkoutBtn = document.getElementById('checkout-btn');
   if (checkoutBtn && !checkoutBtn._listenerAdded) {
     checkoutBtn._listenerAdded = true;
     checkoutBtn.addEventListener('click', () => {
