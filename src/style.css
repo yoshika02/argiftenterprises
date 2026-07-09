@@ -1649,9 +1649,6 @@ footer {
     gap: 1rem;
   }
 
-  .product-img-wrapper {
-    height: 180px;
-  }
 
   .product-info {
     padding: 0.8rem;
@@ -1768,9 +1765,6 @@ footer {
     gap: 0.8rem;
   }
 
-  .product-img-wrapper {
-    height: 200px;
-  }
 
   .empty-catalog {
     padding: 2rem 1rem;
