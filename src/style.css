@@ -636,11 +636,12 @@ header {
   position: absolute;
   bottom: 1rem;
   left: 1rem;
-  background: rgba(5, 5, 8, 0.85);
+  background: #e6f7ff;
+  color: #003a5c;
   backdrop-filter: blur(5px);
-  border: 1px solid var(--border-light);
+  border: 1px solid #b3e0ff;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.25rem 0.65rem;
   border-radius: 4px;
 }
