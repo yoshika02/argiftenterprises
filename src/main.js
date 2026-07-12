@@ -453,7 +453,7 @@ function renderProducts() {
             <!-- Phase 2: Qty controls (shown after adding) -->
             <div class="cart-qty-inline${inCart ? ' visible' : ''}">
               <button class="qty-btn qty-minus">−</button>
-              <span class="qty-value">${cartQty}</span>
+              <input type="number" class="qty-value-input" value="${cartQty}" min="1" max="1000" style="width: 45px; text-align: center; border: 1.5px solid rgba(255, 102, 0, 0.4); border-radius: 4px; font-family: var(--font-head); font-weight: 700; color: #1a0a00; padding: 2px;">
               <button class="qty-btn qty-plus">+</button>
             </div>
             <button class="go-to-cart-btn${inCart ? ' visible' : ''}">🛒 Cart</button>
@@ -474,7 +474,7 @@ function renderProducts() {
     if (product.inStock) {
       const addBtn      = card.querySelector('.add-to-cart-btn');
       const qtyInline   = card.querySelector('.cart-qty-inline');
-      const qtyValueEl  = card.querySelector('.qty-value');
+      const qtyInput    = card.querySelector('.qty-value-input');
       const qtyMinus    = card.querySelector('.qty-minus');
       const qtyPlus     = card.querySelector('.qty-plus');
       const goCartBtn   = card.querySelector('.go-to-cart-btn');
@@ -485,7 +485,7 @@ function renderProducts() {
       // When the qty controls are visible they reflect the CART quantity
       function syncQtyFromCart() {
         const ci = cart.find(i => i.product.id === product.id);
-        if (ci && qtyValueEl) qtyValueEl.textContent = ci.quantity;
+        if (ci && qtyInput) qtyInput.value = ci.quantity;
       }
 
       // Phase-toggle helper
@@ -501,7 +501,7 @@ function renderProducts() {
         if (qtyInline) qtyInline.classList.remove('visible');
         if (goCartBtn) goCartBtn.classList.remove('visible');
         pendingQty = 1;
-        if (qtyValueEl) qtyValueEl.textContent = '1';
+        if (qtyInput) qtyInput.value = '1';
       }
 
       // Start in correct phase
@@ -514,6 +514,22 @@ function renderProducts() {
           addToCart(product, pendingQty);
           showQtyPhase();
         });
+      }
+      
+      // Manual quantity input
+      if (qtyInput) {
+        qtyInput.addEventListener('change', (e) => {
+          e.stopPropagation();
+          const newQty = parseInt(e.target.value, 10);
+          if (isNaN(newQty) || newQty <= 0) {
+             removeFromCart(product.id);
+             showAddPhase();
+          } else {
+             setCartQty(product.id, newQty);
+             syncQtyFromCart();
+          }
+        });
+        qtyInput.addEventListener('click', (e) => e.stopPropagation()); // prevent triggering details view
       }
 
       // Qty minus: if hits 0, remove from cart and revert to add phase
@@ -529,6 +545,9 @@ function renderProducts() {
               changeCartQty(product.id, -1);
               syncQtyFromCart();
             }
+          } else if (pendingQty > 1) {
+            pendingQty--;
+            if (qtyInput) qtyInput.value = pendingQty;
           }
         });
       }
@@ -537,8 +556,14 @@ function renderProducts() {
       if (qtyPlus) {
         qtyPlus.addEventListener('click', (e) => {
           e.stopPropagation();
-          changeCartQty(product.id, 1);
-          syncQtyFromCart();
+          const ci = cart.find(i => i.product.id === product.id);
+          if (ci) {
+             changeCartQty(product.id, 1);
+             syncQtyFromCart();
+          } else {
+             pendingQty++;
+             if (qtyInput) qtyInput.value = pendingQty;
+          }
         });
       }
 
@@ -763,6 +788,14 @@ function changeCartQty(productId, delta) {
   updateCartUI();
 }
 
+function setCartQty(productId, newQty) {
+  const item = cart.find(i => i.product.id === productId);
+  if (!item) return;
+  const totalOther = cart.reduce((sum, i) => i.product.id === productId ? sum : sum + i.quantity, 0);
+  item.quantity = Math.max(1, Math.min(CART_MAX - totalOther, newQty));
+  updateCartUI();
+}
+
 function updateCartUI() {
   const cartCountEl = document.getElementById('cart-count');
   const mobileBadge = document.getElementById('mobile-cart-badge');
@@ -857,7 +890,7 @@ function renderCart() {
       <div style="display:flex;align-items:center;gap:0.5rem;flex-shrink:0;">
         <button class="cart-qty-btn cart-minus" data-id="${item.product.id}"
           style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.1);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">−</button>
-        <span style="min-width:30px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:1rem;">${item.quantity}</span>
+        <input type="number" class="cart-qty-input" data-id="${item.product.id}" value="${item.quantity}" min="1" max="1000" style="width: 50px; text-align: center; border: 1.5px solid rgba(255, 102, 0, 0.4); border-radius: 4px; font-family: var(--font-head); font-weight: 700; color: #1a0a00; padding: 2px;">
         <button class="cart-qty-btn cart-plus" data-id="${item.product.id}"
           style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.1);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">+</button>
         <span style="min-width:65px;text-align:right;font-weight:700;color:#ff6600;">₹${itemTotal}</span>
@@ -907,6 +940,17 @@ function renderCart() {
   });
   document.querySelectorAll('.cart-plus').forEach(btn => {
     btn.addEventListener('click', () => changeCartQty(btn.getAttribute('data-id'), 1));
+  });
+  document.querySelectorAll('.cart-qty-input').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const newQty = parseInt(e.target.value, 10);
+      const id = e.target.getAttribute('data-id');
+      if (isNaN(newQty) || newQty <= 0) {
+        removeFromCart(id);
+      } else {
+        setCartQty(id, newQty);
+      }
+    });
   });
   document.querySelectorAll('.remove-item-btn').forEach(btn => {
     btn.addEventListener('click', () => removeFromCart(btn.getAttribute('data-id')));
@@ -966,7 +1010,7 @@ function renderDesktopCartPanel() {
       </div>
       <div class="dcp-item-controls">
         <button class="dcp-qty-btn dcp-minus" data-id="${item.product.id}">−</button>
-        <span class="dcp-qty-val">${item.quantity}</span>
+        <input type="number" class="dcp-qty-input" data-id="${item.product.id}" value="${item.quantity}" min="1" max="1000" style="width: 40px; text-align: center; border: 1.5px solid rgba(255, 102, 0, 0.4); border-radius: 4px; font-family: var(--font-head); font-weight: 700; color: #1a0a00; padding: 2px; font-size: 0.85rem;">
         <button class="dcp-qty-btn dcp-plus" data-id="${item.product.id}">+</button>
         <button class="dcp-remove" data-id="${item.product.id}">✕</button>
       </div>
@@ -1009,6 +1053,17 @@ function renderDesktopCartPanel() {
   });
   panel.querySelectorAll('.dcp-plus').forEach(btn => {
     btn.addEventListener('click', () => { changeCartQty(btn.getAttribute('data-id'), 1); });
+  });
+  panel.querySelectorAll('.dcp-qty-input').forEach(input => {
+    input.addEventListener('change', (e) => {
+      const newQty = parseInt(e.target.value, 10);
+      const id = e.target.getAttribute('data-id');
+      if (isNaN(newQty) || newQty <= 0) {
+        removeFromCart(id);
+      } else {
+        setCartQty(id, newQty);
+      }
+    });
   });
   panel.querySelectorAll('.dcp-remove').forEach(btn => {
     btn.addEventListener('click', () => { removeFromCart(btn.getAttribute('data-id')); });
@@ -1180,18 +1235,6 @@ function openCheckoutView() {
       // Submit to Google Sheet
       await submitOrderToSheet(orderData);
 
-      // Build WhatsApp message
-      const waText = encodeURIComponent(
-        `🛒 *New Wholesale Order — A.R. GiftCollection*\n\n` +
-        `👤 Name: ${name}\n📞 Phone: ${phone}\n🏪 Business: ${business || '—'}\n📍 City: ${city}\n\n` +
-        `*Items:*\n${itemLines.join('\n')}\n\n` +
-        `💰 *Total: ₹${total.toLocaleString('en-IN')}*\n\n` +
-        (notes ? `📝 Notes: ${notes}` : '')
-      );
-
-      // Open WhatsApp
-      window.open(`https://wa.me/919811111111?text=${waText}`, '_blank');
-
       // Show confirmation
       showConfirmationPage(name, total);
 
@@ -1199,7 +1242,7 @@ function openCheckoutView() {
       cart = [];
       updateCartUI();
 
-      placeBtn.textContent = '✅ Place Order via WhatsApp';
+      placeBtn.textContent = '✅ Pay Now & Complete Order';
       placeBtn.disabled = false;
     });
   }
