@@ -78,6 +78,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   initCarouselControls();
   startCarouselAutoPlay();
   renderCart();
+  initDesktopCartPanel();
+  initMobileCartButtons();
 });
 
 // Fetch Data from Google Sheets CSV
@@ -425,6 +427,11 @@ function renderProducts() {
 
     const extraClass = product.cropClass ? ` ${product.cropClass}` : '';
 
+    // Check if already in cart
+    const inCart = cart.some(i => i.product.id === product.id);
+    const cartItem = cart.find(i => i.product.id === product.id);
+    const cartQty  = cartItem ? cartItem.quantity : 1;
+
     card.innerHTML = `
       <div class="product-img-wrapper">
         <div class="product-img${extraClass}" style="background-image: url('${product.image}');" role="img" aria-label="${product.name}"></div>
@@ -434,48 +441,114 @@ function renderProducts() {
       <div class="product-info">
         <h3>${product.name}</h3>
         <p class="product-desc-short">${product.description}</p>
-        <div class="qty-row" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; ${!product.inStock ? 'opacity:0.4;pointer-events:none;' : ''}">
-          <button class="qty-btn qty-minus" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">−</button>
-          <span class="qty-value" style="min-width:36px;text-align:center;font-family:var(--font-head);font-weight:700;font-size:1rem;color:#1a0a00;">1</span>
-          <button class="qty-btn qty-plus" style="width:32px;height:32px;border-radius:50%;border:2px solid rgba(255,102,0,0.4);background:rgba(255,102,0,0.08);color:#ff6600;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;">+</button>
+
+        <!-- Combined cart action row -->
+        <div class="cart-action-row" style="${!product.inStock ? 'opacity:0.4;pointer-events:none;' : ''}">
+          ${product.inStock ? `
+            <!-- Phase 1: Add to Cart button -->
+            <button class="btn-primary add-to-cart-btn" style="display:${inCart ? 'none' : 'inline-flex'}; flex:1; justify-content:center; padding:0.5rem; font-size:0.85rem;">
+              🛒 Add to Cart
+            </button>
+
+            <!-- Phase 2: Qty controls (shown after adding) -->
+            <div class="cart-qty-inline${inCart ? ' visible' : ''}">
+              <button class="qty-btn qty-minus">−</button>
+              <span class="qty-value">${cartQty}</span>
+              <button class="qty-btn qty-plus">+</button>
+            </div>
+            <button class="go-to-cart-btn${inCart ? ' visible' : ''}">🛒 Cart</button>
+          ` : `<button class="btn-primary" disabled style="flex:1;justify-content:center;padding:0.5rem;font-size:0.85rem;opacity:0.5;">Out of Stock</button>`}
         </div>
-        <div style="display: flex; gap: 0.5rem;">
-          <button class="btn-secondary view-details-btn" style="flex: 1; justify-content: center; padding: 0.5rem; font-size: 0.85rem;">
-            Details
-          </button>
-          <button class="btn-primary add-to-cart-btn" style="flex: 1.5; justify-content: center; padding: 0.5rem; font-size: 0.85rem;" ${!product.inStock ? 'disabled' : ''}>
-            ${product.inStock ? 'Add to Cart' : 'Out'}
-          </button>
-        </div>
+
+        <button class="btn-secondary view-details-btn" style="width:100%; justify-content:center; padding:0.45rem; font-size:0.82rem; margin-top:0;">
+          Details
+        </button>
       </div>
     `;
 
-    // View Details button handler
+    // View Details button
     card.querySelector('.view-details-btn').addEventListener('click', () => {
       openProductModal(product);
     });
 
-    // Quantity +/- handlers
-    let qty = 1;
-    const qtyValueEl = card.querySelector('.qty-value');
-    card.querySelector('.qty-minus').addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (qty > 1) { qty--; qtyValueEl.textContent = qty; }
-    });
-    card.querySelector('.qty-plus').addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (qty < 1000) { qty++; qtyValueEl.textContent = qty; }
-    });
+    if (product.inStock) {
+      const addBtn      = card.querySelector('.add-to-cart-btn');
+      const qtyInline   = card.querySelector('.cart-qty-inline');
+      const qtyValueEl  = card.querySelector('.qty-value');
+      const qtyMinus    = card.querySelector('.qty-minus');
+      const qtyPlus     = card.querySelector('.qty-plus');
+      const goCartBtn   = card.querySelector('.go-to-cart-btn');
 
-    // Add to cart handler (uses selected qty)
-    const addToCartBtn = card.querySelector('.add-to-cart-btn');
-    if (product.inStock && addToCartBtn) {
-      addToCartBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        addToCart(product, qty);
-        qty = 1;
-        qtyValueEl.textContent = '1';
-      });
+      // Track local qty for new additions (if not yet in cart)
+      let pendingQty = 1;
+
+      // When the qty controls are visible they reflect the CART quantity
+      function syncQtyFromCart() {
+        const ci = cart.find(i => i.product.id === product.id);
+        if (ci && qtyValueEl) qtyValueEl.textContent = ci.quantity;
+      }
+
+      // Phase-toggle helper
+      function showQtyPhase() {
+        if (addBtn)    addBtn.style.display    = 'none';
+        if (qtyInline) qtyInline.classList.add('visible');
+        if (goCartBtn) goCartBtn.classList.add('visible');
+        syncQtyFromCart();
+      }
+
+      function showAddPhase() {
+        if (addBtn)    addBtn.style.display    = 'inline-flex';
+        if (qtyInline) qtyInline.classList.remove('visible');
+        if (goCartBtn) goCartBtn.classList.remove('visible');
+        pendingQty = 1;
+        if (qtyValueEl) qtyValueEl.textContent = '1';
+      }
+
+      // Start in correct phase
+      if (inCart) showQtyPhase();
+
+      // Add to Cart button click
+      if (addBtn) {
+        addBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          addToCart(product, pendingQty);
+          showQtyPhase();
+        });
+      }
+
+      // Qty minus: if hits 0, remove from cart and revert to add phase
+      if (qtyMinus) {
+        qtyMinus.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const ci = cart.find(i => i.product.id === product.id);
+          if (ci) {
+            if (ci.quantity <= 1) {
+              removeFromCart(product.id);
+              showAddPhase();
+            } else {
+              changeCartQty(product.id, -1);
+              syncQtyFromCart();
+            }
+          }
+        });
+      }
+
+      // Qty plus
+      if (qtyPlus) {
+        qtyPlus.addEventListener('click', (e) => {
+          e.stopPropagation();
+          changeCartQty(product.id, 1);
+          syncQtyFromCart();
+        });
+      }
+
+      // Go to cart button
+      if (goCartBtn) {
+        goCartBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          switchView('cart-view');
+        });
+      }
     }
 
     catalogProductGrid.appendChild(card);
@@ -633,52 +706,6 @@ function initFormEvents() {
 
 // Cart Functionality
 const CART_MAX = 1000;
-const CART_RESERVATION_SECONDS = 15 * 60; // 15 minutes
-let cartCountdownInterval = null;
-let cartCountdownSeconds = 0;
-
-function startCartCountdown() {
-  // Reset to 15 minutes whenever something is added
-  cartCountdownSeconds = CART_RESERVATION_SECONDS;
-  const countdownEl = document.getElementById('cart-countdown');
-  if (countdownEl) countdownEl.style.display = 'inline';
-
-  // Clear any existing interval
-  if (cartCountdownInterval) clearInterval(cartCountdownInterval);
-
-  cartCountdownInterval = setInterval(() => {
-    cartCountdownSeconds--;
-    const mins = Math.floor(cartCountdownSeconds / 60);
-    const secs = cartCountdownSeconds % 60;
-    const display = `⏳ ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-
-    if (countdownEl) {
-      countdownEl.textContent = display;
-      // Turn red in last 2 minutes
-      countdownEl.style.color = cartCountdownSeconds <= 120 ? '#e74c3c' : '#ff6600';
-      countdownEl.style.borderColor = cartCountdownSeconds <= 120 ? 'rgba(231,76,60,0.4)' : 'rgba(255,102,0,0.3)';
-    }
-
-    if (cartCountdownSeconds <= 0) {
-      clearInterval(cartCountdownInterval);
-      cartCountdownInterval = null;
-      // Cart expired — clear it
-      cart = [];
-      updateCartUI();
-      if (countdownEl) countdownEl.style.display = 'none';
-      showToast('⏰ Cart reservation expired! Items have been removed.');
-    }
-  }, 1000);
-}
-
-function stopCartCountdown() {
-  if (cartCountdownInterval) {
-    clearInterval(cartCountdownInterval);
-    cartCountdownInterval = null;
-  }
-  const countdownEl = document.getElementById('cart-countdown');
-  if (countdownEl) countdownEl.style.display = 'none';
-}
 
 function showToast(message) {
   let toast = document.getElementById('cart-toast');
@@ -719,14 +746,12 @@ function addToCart(product, qty = 1) {
   } else {
     cart.push({ product, quantity: allowed });
   }
-  startCartCountdown(); // start/reset 15-min reservation timer
   updateCartUI();
   showToast(`✓ ${allowed}x ${product.name} added to cart!`);
 }
 
 function removeFromCart(productId) {
   cart = cart.filter(item => item.product.id !== productId);
-  if (cart.length === 0) stopCartCountdown(); // stop timer when cart is empty
   updateCartUI();
 }
 
@@ -740,8 +765,14 @@ function changeCartQty(productId, delta) {
 
 function updateCartUI() {
   const cartCountEl = document.getElementById('cart-count');
+  const mobileBadge = document.getElementById('mobile-cart-badge');
+  const mfcCount    = document.getElementById('mfc-count');
+  const mfcBtn      = document.getElementById('mobile-float-cart');
+  const dcpTabCount = document.getElementById('dcp-tab-count');
+
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   if (cartCountEl) {
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     // Animate the number rolling
     cartCountEl.style.transform = 'scale(1.4)';
     cartCountEl.style.color = '#ff6600';
@@ -751,7 +782,32 @@ function updateCartUI() {
       cartCountEl.style.color = '';
     }, 300);
   }
+
+  // Mobile badge on cart icon
+  if (mobileBadge) {
+    if (totalItems > 0) {
+      mobileBadge.style.display = 'flex';
+      mobileBadge.textContent = totalItems > 99 ? '99+' : totalItems;
+    } else {
+      mobileBadge.style.display = 'none';
+    }
+  }
+
+  // Mobile floating "Go to Cart" button
+  if (mfcBtn) {
+    if (totalItems > 0) {
+      mfcBtn.style.display = 'flex';
+      if (mfcCount) mfcCount.textContent = totalItems;
+    } else {
+      mfcBtn.style.display = 'none';
+    }
+  }
+
+  // Desktop side panel tab count
+  if (dcpTabCount) dcpTabCount.textContent = totalItems;
+
   renderCart();
+  renderDesktopCartPanel();
 }
 
 function renderCart() {
@@ -861,6 +917,167 @@ function renderCart() {
     checkoutBtn._listenerAdded = true;
     checkoutBtn.addEventListener('click', () => {
       if (!checkoutBtn.disabled) openCheckoutView();
+    });
+  }
+}
+
+// =============================================
+// DESKTOP SIDE CART PANEL RENDERING
+// =============================================
+function renderDesktopCartPanel() {
+  const panel    = document.getElementById('desktop-cart-panel');
+  const itemsEl  = document.getElementById('dcp-items');
+  const totalEl  = document.getElementById('dcp-total');
+  const fillEl   = document.getElementById('dcp-progress-fill');
+  const msgEl    = document.getElementById('dcp-progress-msg');
+  const chkBtn   = document.getElementById('dcp-checkout-btn');
+  const MIN_ORDER = 5000;
+
+  if (!panel || !itemsEl) return;
+
+  if (cart.length === 0) {
+    itemsEl.innerHTML = '<p class="dcp-empty">Your cart is empty.<br>Add items from the catalog!</p>';
+    if (totalEl) totalEl.textContent = '₹0';
+    if (fillEl)  fillEl.style.width = '0%';
+    if (msgEl)   msgEl.textContent = 'Min ₹5,000 for checkout';
+    if (chkBtn) {
+      chkBtn.disabled = true;
+      chkBtn.style.opacity = '0.5';
+      chkBtn.style.cursor = 'not-allowed';
+      chkBtn.innerHTML = '🔒 Min ₹5,000 Required';
+    }
+    return;
+  }
+
+  let total = 0;
+  itemsEl.innerHTML = '';
+  cart.forEach(item => {
+    const priceNum  = parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
+    const itemTotal = item.quantity * priceNum;
+    total += itemTotal;
+
+    const div = document.createElement('div');
+    div.className = 'dcp-item';
+    div.innerHTML = `
+      <div class="dcp-item-img" style="background-image:url('${item.product.image}');"></div>
+      <div class="dcp-item-info">
+        <div class="dcp-item-name">${item.product.name}</div>
+        <div class="dcp-item-price">₹${item.product.price} × ${item.quantity} = <strong style="color:#ff6600;">₹${itemTotal.toLocaleString('en-IN')}</strong></div>
+      </div>
+      <div class="dcp-item-controls">
+        <button class="dcp-qty-btn dcp-minus" data-id="${item.product.id}">−</button>
+        <span class="dcp-qty-val">${item.quantity}</span>
+        <button class="dcp-qty-btn dcp-plus" data-id="${item.product.id}">+</button>
+        <button class="dcp-remove" data-id="${item.product.id}">✕</button>
+      </div>
+    `;
+    itemsEl.appendChild(div);
+  });
+
+  if (totalEl) totalEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+
+  const pct = Math.min(100, (total / MIN_ORDER) * 100);
+  if (fillEl) fillEl.style.width = `${pct}%`;
+  if (msgEl) {
+    if (total >= MIN_ORDER) {
+      msgEl.textContent = '✅ Ready to checkout!';
+      msgEl.style.color = '#2ecc71';
+    } else {
+      const rem = (MIN_ORDER - total).toLocaleString('en-IN');
+      msgEl.textContent = `Add ₹${rem} more to checkout`;
+      msgEl.style.color = 'var(--text-secondary)';
+    }
+  }
+
+  if (chkBtn) {
+    if (total >= MIN_ORDER) {
+      chkBtn.disabled = false;
+      chkBtn.style.opacity = '1';
+      chkBtn.style.cursor = 'pointer';
+      chkBtn.innerHTML = '✅ Proceed to Checkout';
+    } else {
+      chkBtn.disabled = true;
+      chkBtn.style.opacity = '0.5';
+      chkBtn.style.cursor = 'not-allowed';
+      chkBtn.innerHTML = `🔒 Add ₹${(MIN_ORDER - total).toLocaleString('en-IN')} more`;
+    }
+  }
+
+  // Attach panel controls
+  panel.querySelectorAll('.dcp-minus').forEach(btn => {
+    btn.addEventListener('click', () => { changeCartQty(btn.getAttribute('data-id'), -1); });
+  });
+  panel.querySelectorAll('.dcp-plus').forEach(btn => {
+    btn.addEventListener('click', () => { changeCartQty(btn.getAttribute('data-id'), 1); });
+  });
+  panel.querySelectorAll('.dcp-remove').forEach(btn => {
+    btn.addEventListener('click', () => { removeFromCart(btn.getAttribute('data-id')); });
+  });
+}
+
+// Init desktop panel tab trigger + open/close
+function initDesktopCartPanel() {
+  const panel   = document.getElementById('desktop-cart-panel');
+  const closeBtn = document.getElementById('dcp-close-btn');
+  const goBtn   = document.getElementById('dcp-go-cart-btn');
+  const chkBtn  = document.getElementById('dcp-checkout-btn');
+
+  // Create the vertical tab trigger button
+  const trigger = document.createElement('button');
+  trigger.className = 'dcp-tab-trigger';
+  trigger.id = 'dcp-tab-trigger';
+  trigger.setAttribute('aria-label', 'Open cart');
+  trigger.innerHTML = `🛒 Cart <span class="dcp-tab-count" id="dcp-tab-count">0</span>`;
+  document.body.appendChild(trigger);
+
+  trigger.addEventListener('click', () => {
+    panel.classList.add('open');
+    trigger.style.display = 'none';
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      panel.classList.remove('open');
+      trigger.style.display = 'flex';
+    });
+  }
+
+  if (goBtn) {
+    goBtn.addEventListener('click', () => {
+      panel.classList.remove('open');
+      trigger.style.display = 'flex';
+      switchView('cart-view');
+    });
+  }
+
+  if (chkBtn && !chkBtn._listenerAdded) {
+    chkBtn._listenerAdded = true;
+    chkBtn.addEventListener('click', () => {
+      if (!chkBtn.disabled) {
+        panel.classList.remove('open');
+        trigger.style.display = 'flex';
+        openCheckoutView();
+      }
+    });
+  }
+}
+
+// Init mobile cart button & floating button
+function initMobileCartButtons() {
+  const mobileCartBtn   = document.getElementById('mobile-cart-btn');
+  const mobileFloatCart = document.getElementById('mobile-float-cart');
+
+  if (mobileCartBtn) {
+    mobileCartBtn.addEventListener('click', () => {
+      navMenu.classList.remove('active');
+      mobileMenuToggle.setAttribute('aria-expanded', 'false');
+      switchView('cart-view');
+    });
+  }
+
+  if (mobileFloatCart) {
+    mobileFloatCart.addEventListener('click', () => {
+      switchView('cart-view');
     });
   }
 }
@@ -980,7 +1197,6 @@ function openCheckoutView() {
 
       // Clear cart
       cart = [];
-      stopCartCountdown();
       updateCartUI();
 
       placeBtn.textContent = '✅ Place Order via WhatsApp';

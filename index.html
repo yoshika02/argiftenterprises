@@ -38,15 +38,47 @@
             <a href="#" class="nav-item cart-item" data-view="cart-view" id="nav-cart">
               🛒 Cart <span id="cart-count">(0)</span>
             </a>
-            <span id="cart-countdown" style="display:none; font-family:var(--font-head); font-size:0.78rem; font-weight:700; color:#ff6600; background:rgba(255,102,0,0.12); border:1px solid rgba(255,102,0,0.3); padding:0.2rem 0.6rem; border-radius:50px; margin-left:0.4rem; vertical-align:middle;">⏳ 15:00</span>
           </li>
         </ul>
       </nav>
+      <!-- Mobile cart icon in header -->
+      <button class="mobile-cart-btn" id="mobile-cart-btn" aria-label="View Cart">
+        <span class="mobile-cart-icon">🛒</span>
+        <span class="mobile-cart-badge" id="mobile-cart-badge" style="display:none;">0</span>
+      </button>
       <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Menu" aria-expanded="false">
         ☰
       </button>
     </div>
   </header>
+
+  <!-- Desktop Side Cart Panel -->
+  <aside id="desktop-cart-panel" class="desktop-cart-panel">
+    <div class="dcp-header">
+      <h3 class="dcp-title">🛒 Your Cart</h3>
+      <button class="dcp-close" id="dcp-close-btn" aria-label="Close cart">✕</button>
+    </div>
+    <div class="dcp-items" id="dcp-items">
+      <p class="dcp-empty">Your cart is empty.<br>Add items from the catalog!</p>
+    </div>
+    <div class="dcp-footer" id="dcp-footer">
+      <div class="dcp-total-row">
+        <span>Total</span>
+        <span class="dcp-total" id="dcp-total">₹0</span>
+      </div>
+      <div class="dcp-progress-wrap">
+        <div class="dcp-progress-bar"><div class="dcp-progress-fill" id="dcp-progress-fill"></div></div>
+        <p class="dcp-progress-msg" id="dcp-progress-msg">Min ₹5,000 for checkout</p>
+      </div>
+      <button class="btn-primary dcp-go-cart" id="dcp-go-cart-btn">View Full Cart →</button>
+      <button class="btn-primary dcp-checkout" id="dcp-checkout-btn" disabled style="opacity:0.5;cursor:not-allowed;">🔒 Min ₹5,000 Required</button>
+    </div>
+  </aside>
+
+  <!-- Mobile Floating "Go to Cart" Button -->
+  <button class="mobile-float-cart" id="mobile-float-cart" style="display:none;" aria-label="Go to cart">
+    🛒 Go to Cart &nbsp;<span class="mfc-count" id="mfc-count">0</span>
+  </button>
 
   <main>
     <!-- VIEW 1: HOME PAGE -->
