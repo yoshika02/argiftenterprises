@@ -954,8 +954,8 @@ textarea.form-control {
 }
 
 .modal-wrapper {
-  background: #0f0f18;
-  border: 1px solid var(--border-light);
+  background: #fffde7;
+  border: 1px solid rgba(255, 102, 0, 0.25);
   border-radius: 24px;
   width: 90%;
   max-width: 900px;
@@ -964,7 +964,7 @@ textarea.form-control {
   position: relative;
   transform: translateY(30px) scale(0.95);
   transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
 }
 
 .modal-overlay.active .modal-wrapper {
@@ -975,9 +975,9 @@ textarea.form-control {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: none;
-  color: var(--text-main);
+  background: rgba(255, 102, 0, 0.1);
+  border: 1px solid rgba(255, 102, 0, 0.3);
+  color: #1a0a00;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -990,8 +990,8 @@ textarea.form-control {
 }
 
 .modal-close:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--accent-cyan);
+  background: rgba(255, 102, 0, 0.2);
+  color: var(--accent-orange);
 }
 
 .modal-grid {
@@ -1016,6 +1016,7 @@ textarea.form-control {
   padding: 3rem;
   display: flex;
   flex-direction: column;
+  background: #fffde7;
 }
 
 .modal-header {
@@ -1030,9 +1031,9 @@ textarea.form-control {
 
 .modal-badge {
   display: inline-block;
-  background: rgba(0, 242, 254, 0.1);
-  color: var(--accent-cyan);
-  border: 1px solid rgba(0, 242, 254, 0.2);
+  background: rgba(255, 102, 0, 0.1);
+  color: var(--accent-orange);
+  border: 1px solid rgba(255, 102, 0, 0.3);
   padding: 0.2rem 0.8rem;
   border-radius: 4px;
   font-size: 0.8rem;
@@ -1092,7 +1093,7 @@ textarea.form-control {
   display: flex;
   justify-content: space-between;
   padding: 0.6rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 102, 0, 0.12);
 }
 
 .spec-list li span:first-child {

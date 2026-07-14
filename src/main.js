@@ -701,9 +701,10 @@ function openProductModal(product) {
   const stockStatusEl = document.getElementById('modal-stock-status');
   if (stockStatusEl) {
     if (product.inStock) {
-      const stockNum = (product.stock !== null && product.stock !== undefined) ? ` (${product.stock} left)` : '';
+      const hasStock = Number.isFinite(product.stock) && product.stock >= 0;
+      const stockNum = hasStock ? ` (${product.stock} left)` : '';
       stockStatusEl.textContent = `In Stock${stockNum}`;
-      stockStatusEl.style.background = product.stock !== null && product.stock <= 5 ? '#e67e22' : '#2ecc71';
+      stockStatusEl.style.background = hasStock && product.stock <= 5 ? '#e67e22' : '#2ecc71';
     } else {
       stockStatusEl.textContent = 'Out of Stock';
       stockStatusEl.style.background = '#e74c3c';
