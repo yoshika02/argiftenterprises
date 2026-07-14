@@ -83,24 +83,30 @@
   <main>
     <!-- VIEW 1: HOME PAGE -->
     <section id="home-view" class="view active">
-      <!-- Hero Section -->
-      <section class="hero">
-        <div class="hero-glow"></div>
-        <div class="container hero-content">
-          <span class="hero-tag">Premium Collector Series</span>
-          <h1>Crafting the Extraordinary for Collectors</h1>
-          <p class="hero-desc">
-            At A.R. GiftCollection, we translate artistic imagination into physical masterpieces. We specialize in
-            limited-edition, highly-detailed collectibles starting with our industry-leading anime scale figurines.
-          </p>
-          <div class="hero-actions">
-            <button class="btn-primary" id="hero-cta-catalog" data-view="catalog-view">
-              Explore Catalog
-            </button>
-            <button class="btn-secondary" id="hero-cta-contact" data-view="contact-view">
-              Contact Studio
-            </button>
+      <!-- Hero Banner Section -->
+      <section class="hero hero-banner" id="hero-banner-section">
+        <div class="banner-slider" id="banner-slider">
+          <div class="banner-slide active" style="background-image:url('/ARgiftcollection Web 1 .jpg.jpeg');">
+            <div class="banner-overlay">
+              <div class="banner-cta-group">
+                <button class="btn-primary" id="hero-cta-catalog" data-view="catalog-view">Explore Catalog</button>
+                <button class="btn-secondary" id="hero-cta-contact" data-view="contact-view">Contact Studio</button>
+              </div>
+            </div>
           </div>
+          <div class="banner-slide" style="background-image:url('/Web 2 .jpg.jpeg');">
+            <div class="banner-overlay">
+              <div class="banner-cta-group">
+                <button class="btn-primary banner-cta-catalog">Shop Now</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="banner-nav banner-prev" id="banner-prev" aria-label="Previous banner">&#10094;</button>
+        <button class="banner-nav banner-next" id="banner-next" aria-label="Next banner">&#10095;</button>
+        <div class="banner-dots" id="banner-dots">
+          <span class="banner-dot active" data-index="0"></span>
+          <span class="banner-dot" data-index="1"></span>
         </div>
       </section>
 
@@ -352,6 +358,12 @@
             </div>
           </div>
           <div style="margin-bottom:1rem;">
+            <label style="font-family:var(--font-head); font-size:0.85rem; font-weight:700; color:#6b3a1f; display:block; margin-bottom:0.4rem;">Email Address <span style="font-weight:400;color:#a07050;">(for order confirmation &amp; QR)</span></label>
+            <input type="email" id="order-email" placeholder="you@email.com"
+              style="width:100%; padding:0.75rem 1rem; border:1.5px solid rgba(255,102,0,0.25); border-radius:8px; font-family:var(--font-body); font-size:0.95rem; color:#1a0a00; outline:none; transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='#ff6600'" onblur="this.style.borderColor='rgba(255,102,0,0.25)'">
+          </div>
+          <div style="margin-bottom:1rem;">
             <label style="font-family:var(--font-head); font-size:0.85rem; font-weight:700; color:#6b3a1f; display:block; margin-bottom:0.4rem;">Business / Shop Name</label>
             <input type="text" id="order-business" placeholder="Your shop or business name (optional)"
               style="width:100%; padding:0.75rem 1rem; border:1.5px solid rgba(255,102,0,0.25); border-radius:8px; font-family:var(--font-body); font-size:0.95rem; color:#1a0a00; outline:none; transition:border-color 0.2s;"
@@ -384,19 +396,30 @@
 
     <!-- VIEW 6: ORDER CONFIRMATION -->
     <section id="confirmation-view" class="view">
-      <div class="container" style="max-width:600px; text-align:center; padding-top:3rem; padding-bottom:3rem;">
+      <div class="container" style="max-width:640px; text-align:center; padding-top:3rem; padding-bottom:3rem;">
         <div style="font-size:4rem; margin-bottom:1rem;">🎉</div>
         <h2 style="font-family:var(--font-head); font-size:2rem; color:#1a0a00; margin-bottom:0.75rem;">Wholesale Order Received!</h2>
+        <!-- Order ID Badge -->
+        <div id="confirm-order-id-wrap" style="background:var(--grad-primary);border-radius:12px;padding:0.75rem 1.5rem;display:inline-block;margin-bottom:1.25rem;">
+          <p style="margin:0;font-size:0.75rem;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:1.5px;">Order Reference</p>
+          <p style="margin:4px 0 0;font-size:1.6rem;font-weight:800;color:#fff;letter-spacing:3px;font-family:monospace;" id="confirm-order-id">—</p>
+        </div>
         <p style="color:#6b3a1f; font-size:1.05rem; margin-bottom:2rem;" id="confirm-message">
-          Thank you! Your wholesale order has been placed successfully and saved to our system.
+          Thank you! Your wholesale order has been placed successfully.
         </p>
-        <div id="confirm-order-box" style="background:#fff7f0; border:2px solid rgba(255,102,0,0.2); border-radius:14px; padding:1.5rem; margin-bottom:2rem; text-align:left;">
+        <div id="confirm-order-box" style="background:#fff7f0; border:2px solid rgba(255,102,0,0.2); border-radius:14px; padding:1.5rem; margin-bottom:1.5rem; text-align:left;">
           <p style="font-family:var(--font-head); font-size:0.8rem; color:#a07050; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.75rem;">Your Wholesale Order</p>
           <div id="confirm-items" style="font-size:0.92rem; color:#1a0a00; line-height:1.9;"></div>
           <div style="border-top:1px solid rgba(255,102,0,0.15); margin-top:1rem; padding-top:0.75rem; display:flex; justify-content:space-between;">
             <strong style="font-family:var(--font-head); color:#1a0a00;">Order Total</strong>
             <strong style="font-family:var(--font-head); color:#ff6600;" id="confirm-total">₹0</strong>
           </div>
+        </div>
+        <!-- QR Code -->
+        <div id="confirm-qr-wrap" style="margin-bottom:1.5rem;display:none;">
+          <p style="font-size:0.85rem;color:#6b3a1f;margin-bottom:0.5rem;font-weight:600;">📱 Scan for quick order reference</p>
+          <img id="confirm-qr-img" src="" alt="Order QR Code" style="width:150px;height:150px;border-radius:10px;border:3px solid #ff6600;">
+          <p style="font-size:0.75rem;color:#a07050;margin-top:0.4rem;">QR code emailed to you automatically</p>
         </div>
         <a href="https://chat.whatsapp.com/KDBjvt5BtJ9DUY1vb3DcW2" target="_blank" rel="noopener"
           style="display:inline-block; background:#25d366; color:#fff; font-family:var(--font-head); font-weight:700; padding:0.9rem 2rem; border-radius:50px; text-decoration:none; margin-bottom:1rem; font-size:1rem;">
@@ -414,9 +437,14 @@
     <div class="modal-wrapper">
       <button class="modal-close" id="modal-close-btn" aria-label="Close details">✕</button>
       <div class="modal-grid">
-        <!-- Left Col: Image -->
+        <!-- Left Col: Image + Related -->
         <div class="modal-img-col">
-          <div class="modal-img" id="modal-product-image" role="img" aria-label=""></div>
+          <div class="modal-img" id="modal-product-image" role="img" aria-label="" style="cursor:zoom-in;"></div>
+          <!-- Related Figures -->
+          <div id="modal-related-wrap" style="padding:1rem;background:#07070a;border-top:1px solid rgba(255,102,0,0.15);">
+            <p style="font-family:var(--font-head);font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:#a07050;margin-bottom:0.6rem;">Related Figures</p>
+            <div id="modal-related-grid" style="display:flex;gap:0.5rem;flex-wrap:wrap;"></div>
+          </div>
         </div>
         <!-- Right Col: Details -->
         <div class="modal-content-col">

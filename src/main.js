@@ -80,27 +80,55 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderCart();
   initDesktopCartPanel();
   initMobileCartButtons();
+  initBannerSlider();
 });
+
+// ==========================================
+// BANNER SLIDER
+// ==========================================
+function initBannerSlider() {
+  const slides = document.querySelectorAll('.banner-slide');
+  const dots   = document.querySelectorAll('.banner-dot');
+  const prev   = document.getElementById('banner-prev');
+  const next   = document.getElementById('banner-next');
+  if (!slides.length) return;
+
+  let current = 0;
+  let timer;
+
+  function goTo(idx) {
+    slides[current].classList.remove('active');
+    dots[current] && dots[current].classList.remove('active');
+    current = (idx + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current] && dots[current].classList.add('active');
+  }
+
+  function autoPlay() {
+    timer = setInterval(() => goTo(current + 1), 5000);
+  }
+
+  function reset() { clearInterval(timer); autoPlay(); }
+
+  if (prev) prev.addEventListener('click', () => { goTo(current - 1); reset(); });
+  if (next) next.addEventListener('click', () => { goTo(current + 1); reset(); });
+  dots.forEach(d => d.addEventListener('click', () => { goTo(parseInt(d.dataset.index)); reset(); }));
+
+  // "Shop Now" buttons on banner slides
+  document.querySelectorAll('.banner-cta-catalog').forEach(btn =>
+    btn.addEventListener('click', () => switchView('catalog-view'))
+  );
+
+  autoPlay();
+}
 
 // Fetch Data from Google Sheets CSV
 function getDirectImageUrl(url) {
   if (!url || url.trim() === '') return '/images/cyber_valkyrie.png';
-  
-  // Extract Google Drive file ID from any Google Drive URL format:
-  // - https://drive.google.com/file/d/FILE_ID/view
-  // - https://drive.google.com/open?id=FILE_ID
-  // - https://drive.google.com/uc?id=FILE_ID
   const fileMatch = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (fileMatch && fileMatch[1]) {
-    // lh3.googleusercontent.com is the most reliable way to embed Drive images
-    return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
-  }
+  if (fileMatch && fileMatch[1]) return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
   const idMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (idMatch && idMatch[1]) {
-    return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
-  }
-  
-  // Already a direct link or unknown format — use as-is
+  if (idMatch && idMatch[1]) return `https://lh3.googleusercontent.com/d/${idMatch[1]}`;
   return url;
 }
 
@@ -112,14 +140,9 @@ async function fetchCatalogFromGoogleSheets() {
       skipEmptyLines: true,
       complete: function(results) {
         if (results.data && results.data.length > 0) {
-          // Map numeric category IDs (1,2,3) from the sheet to our string IDs
           const categoryMap = {
-            '1': 'anime-figurines',
-            '2': 'car-dashboard',
-            '3': 'katana',
-            'anime-figurines': 'anime-figurines',
-            'car-dashboard': 'car-dashboard',
-            'katana': 'katana'
+            '1': 'anime-figurines', '2': 'car-dashboard', '3': 'katana',
+            'anime-figurines': 'anime-figurines', 'car-dashboard': 'car-dashboard', 'katana': 'katana'
           };
           products = results.data.map(row => ({
             id: row.id || Math.random().toString(),
@@ -130,19 +153,17 @@ async function fetchCatalogFromGoogleSheets() {
             dimensions: row.dimensions || row.scale || 'Standard',
             releaseDate: row.releaseDate || 'Available Now',
             price: row.price || 'TBD',
+            stock: row.stock !== undefined ? parseInt(row.stock) : null,  // ← Stock qty from sheet
             inStock: row.inStock ? (row.inStock.toLowerCase() === 'true' || row.inStock.toLowerCase() === 'yes' || row.inStock.toLowerCase() === 'in stock') : true,
             description: `Size: ${row.scale || 'N/A'} | Price: ₹${row.price || 'TBD'}`,
             features: row.features ? row.features.split(';') : ['Highly detailed sculpt', 'Vibrant paint application'],
             image: getDirectImageUrl(row.image),
-            cropClass: '' // Real uploaded photos don't need CSS cropping!
+            cropClass: ''
           }));
         }
         resolve();
       },
-      error: function(err) {
-        console.error("Failed to load catalog from Google Sheets:", err);
-        resolve();
-      }
+      error: function(err) { console.error("Failed to load catalog:", err); resolve(); }
     });
   });
 }
@@ -436,7 +457,7 @@ function renderProducts() {
       <div class="product-img-wrapper">
         <div class="product-img${extraClass}" style="background-image: url('${product.image}');" role="img" aria-label="${product.name}"></div>
         <span class="product-scale">${product.scale}</span>
-        ${!product.inStock ? '<span class="product-scale" style="top: auto; bottom: 10px; right: 10px; left: auto; background: #e74c3c;">Out of Stock</span>' : ''}
+        ${getStockBadgeHTML(product)}
       </div>
       <div class="product-info">
         <h3>${product.name}</h3>
@@ -466,10 +487,10 @@ function renderProducts() {
       </div>
     `;
 
-    // View Details button
-    card.querySelector('.view-details-btn').addEventListener('click', () => {
-      openProductModal(product);
-    });
+    // BOTH the image wrapper AND details button open the modal
+    card.querySelector('.product-img-wrapper').style.cursor = 'pointer';
+    card.querySelector('.product-img-wrapper').addEventListener('click', () => openProductModal(product));
+    card.querySelector('.view-details-btn').addEventListener('click', () => openProductModal(product));
 
     if (product.inStock) {
       const addBtn      = card.querySelector('.add-to-cart-btn');
@@ -627,13 +648,37 @@ function openProductModal(product) {
   modalSpecRelease.textContent = product.releaseDate;
   modalQuoteProductId.value = product.id;
 
-  // Build feature bullet points
+  // Feature bullets
   modalFeatureList.innerHTML = '';
   product.features.forEach(feature => {
     const li = document.createElement('li');
     li.textContent = feature;
     modalFeatureList.appendChild(li);
   });
+
+  // Related figures (same category, different id, max 8)
+  const relatedGrid = document.getElementById('modal-related-grid');
+  const relatedWrap = document.getElementById('modal-related-wrap');
+  if (relatedGrid) {
+    const related = products
+      .filter(p => p.categoryId === product.categoryId && p.id !== product.id)
+      .slice(0, 8);
+    if (related.length > 0) {
+      relatedGrid.innerHTML = '';
+      related.forEach(rel => {
+        const thumb = document.createElement('div');
+        thumb.className = 'modal-related-thumb';
+        thumb.style.backgroundImage = `url('${rel.image}')`;
+        if (rel.cropClass) thumb.style.backgroundPosition = rel.cropClass === 'crop-top' ? 'center top' : 'center bottom';
+        thumb.title = rel.name;
+        thumb.addEventListener('click', () => openProductModal(rel));
+        relatedGrid.appendChild(thumb);
+      });
+      if (relatedWrap) relatedWrap.style.display = 'block';
+    } else {
+      if (relatedWrap) relatedWrap.style.display = 'none';
+    }
+  }
 
   // Reset tab to Specifications
   tabBtns.forEach(btn => {
@@ -645,33 +690,31 @@ function openProductModal(product) {
     else pane.classList.remove('active');
   });
 
-  // Reset success alert and forms
   modalSuccessAlert.style.display = 'none';
   modalQuoteForm.reset();
   modalQuoteForm.style.display = 'block';
 
-  // Open overlay
   productModal.classList.add('active');
-  document.body.style.overflow = 'hidden'; // stop page scrolling in background
-  
+  document.body.style.overflow = 'hidden';
+
   // Stock Status
   const stockStatusEl = document.getElementById('modal-stock-status');
   if (stockStatusEl) {
     if (product.inStock) {
-      stockStatusEl.textContent = 'In Stock';
-      stockStatusEl.style.background = '#2ecc71';
+      const stockNum = (product.stock !== null && product.stock !== undefined) ? ` (${product.stock} left)` : '';
+      stockStatusEl.textContent = `In Stock${stockNum}`;
+      stockStatusEl.style.background = product.stock !== null && product.stock <= 5 ? '#e67e22' : '#2ecc71';
     } else {
       stockStatusEl.textContent = 'Out of Stock';
       stockStatusEl.style.background = '#e74c3c';
     }
   }
 
-  // Setup Add to Cart button
+  // Add to Cart button
   const addToCartBtn = document.getElementById('modal-add-to-cart');
-  // Remove old listeners
   const newAddToCartBtn = addToCartBtn.cloneNode(true);
   addToCartBtn.parentNode.replaceChild(newAddToCartBtn, addToCartBtn);
-  
+
   if (!product.inStock) {
     newAddToCartBtn.disabled = true;
     newAddToCartBtn.style.opacity = '0.5';
@@ -731,6 +774,31 @@ function initFormEvents() {
 
 // Cart Functionality
 const CART_MAX = 1000;
+
+// ── Stock badge helper ──────────────────────────────────────
+function getStockBadgeHTML(product) {
+  if (!product.inStock) {
+    return '<span class="stock-badge out-stock" style="position:absolute;top:auto;bottom:10px;right:10px;left:auto;">Out of Stock</span>';
+  }
+  if (product.stock !== null && product.stock !== undefined) {
+    if (product.stock <= 0) {
+      return '<span class="stock-badge out-stock" style="position:absolute;top:auto;bottom:10px;right:10px;left:auto;">Out of Stock</span>';
+    }
+    if (product.stock <= 5) {
+      return `<span class="stock-badge low-stock" style="position:absolute;top:auto;bottom:10px;right:10px;left:auto;">Only ${product.stock} left!</span>`;
+    }
+    return `<span class="stock-badge in-stock" style="position:absolute;top:auto;bottom:10px;right:10px;left:auto;">Stock: ${product.stock}</span>`;
+  }
+  return ''; // no stock info, show nothing extra
+}
+
+// ── Local Order ID (fallback if Apps Script URL not set) ────
+function generateLocalOrderId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id = 'ARG-';
+  for (let i = 0; i < 8; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
 
 function showToast(message) {
   let toast = document.getElementById('cart-toast');
@@ -1150,17 +1218,19 @@ const ORDERS_SCRIPT_URL = ""; // ← PASTE YOUR APPS SCRIPT WEB APP URL HERE
 async function submitOrderToSheet(orderData) {
   if (!ORDERS_SCRIPT_URL || ORDERS_SCRIPT_URL.trim() === "") {
     console.warn("ORDERS_SCRIPT_URL not set — skipping sheet submission");
-    return { success: true, skipped: true };
+    return { success: true, skipped: true, orderId: null };
   }
   try {
     const formData = new FormData();
     Object.entries(orderData).forEach(([k, v]) => formData.append(k, v));
-    const res = await fetch(ORDERS_SCRIPT_URL, { method: 'POST', body: formData });
+    const res  = await fetch(ORDERS_SCRIPT_URL, { method: 'POST', body: formData });
     const text = await res.text();
-    return { success: true, response: text };
+    let parsed = {};
+    try { parsed = JSON.parse(text); } catch(_) {}
+    return { success: true, response: text, orderId: parsed.orderId || null };
   } catch (err) {
     console.error("Sheet submission failed:", err);
-    return { success: false, error: err.message };
+    return { success: false, error: err.message, orderId: null };
   }
 }
 
@@ -1205,6 +1275,7 @@ function openCheckoutView() {
 
       const name     = document.getElementById('order-name').value.trim();
       const phone    = document.getElementById('order-phone').value.trim();
+      const email    = (document.getElementById('order-email') || {}).value?.trim() || '';
       const business = document.getElementById('order-business').value.trim();
       const city     = document.getElementById('order-city').value.trim();
       const notes    = document.getElementById('order-notes').value.trim();
@@ -1220,11 +1291,12 @@ function openCheckoutView() {
       const orderSummary = itemLines.join(' | ');
       const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
-      // Data to send to Google Sheet
       const orderData = {
         Timestamp:    timestamp,
         Name:         name,
         Phone:        phone,
+        WhatsApp:     phone,
+        Email:        email,
         Business:     business || '—',
         City:         city,
         Notes:        notes || '—',
@@ -1232,13 +1304,11 @@ function openCheckoutView() {
         OrderTotal:   `₹${total.toLocaleString('en-IN')}`,
       };
 
-      // Submit to Google Sheet
-      await submitOrderToSheet(orderData);
+      const sheetResult = await submitOrderToSheet(orderData);
+      const orderId = sheetResult.orderId || generateLocalOrderId();
 
-      // Show confirmation
-      showConfirmationPage(name, total);
+      showConfirmationPage(name, total, orderId, email);
 
-      // Clear cart
       cart = [];
       updateCartUI();
 
@@ -1248,28 +1318,43 @@ function openCheckoutView() {
   }
 }
 
-function showConfirmationPage(name, total) {
-  // Populate confirmation
+function showConfirmationPage(name, total, orderId, customerEmail) {
+  orderId = orderId || generateLocalOrderId();
   const confirmItems = document.getElementById('confirm-items');
   const confirmTotal = document.getElementById('confirm-total');
   const confirmMsg   = document.getElementById('confirm-message');
+  const confirmIdEl  = document.getElementById('confirm-order-id');
+  const qrWrap       = document.getElementById('confirm-qr-wrap');
+  const qrImg        = document.getElementById('confirm-qr-img');
 
   if (confirmMsg) confirmMsg.textContent = `Thank you, ${name}! Our team will contact you on WhatsApp shortly to confirm your order.`;
-  if (confirmTotal) confirmTotal.textContent = `₹${total.toLocaleString('en-IN')}`;
+  if (confirmTotal) confirmTotal.textContent = `\u20b9${total.toLocaleString('en-IN')}`;
+  if (confirmIdEl) confirmIdEl.textContent = orderId;
+
+  // QR code — encodes order ID + total
+  if (qrWrap && qrImg) {
+    const qrData = encodeURIComponent(`Order:${orderId} Total:₹${total.toLocaleString('en-IN')} Customer:${name}`);
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
+    qrWrap.style.display = 'block';
+    if (customerEmail) {
+      qrImg.nextElementSibling && (qrImg.nextElementSibling.textContent = `QR code + full details emailed to ${customerEmail}`);
+    }
+  }
+
   if (confirmItems) {
-    confirmItems.innerHTML = cart.length > 0 ? cart.map(item => {
+    const cartSnapshot = [...cart]; // cart cleared after this
+    confirmItems.innerHTML = cartSnapshot.length > 0 ? cartSnapshot.map(item => {
       const price = parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
       const sub = price * item.quantity;
       return `<div style="display:flex;justify-content:space-between;">
-        <span>${item.product.name} × ${item.quantity}</span>
-        <span style="color:#ff6600;font-weight:600;">₹${sub.toLocaleString('en-IN')}</span>
+        <span>${item.product.name} \u00d7 ${item.quantity}</span>
+        <span style="color:#ff6600;font-weight:600;">\u20b9${sub.toLocaleString('en-IN')}</span>
       </div>`;
     }).join('') : '<p style="color:#a07050;">Order submitted successfully.</p>';
   }
 
   switchView('confirmation-view');
 
-  // Continue shopping button
   const continueBtn = document.getElementById('continue-shopping-btn');
   if (continueBtn && !continueBtn._listenerAdded) {
     continueBtn._listenerAdded = true;
