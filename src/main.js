@@ -1213,7 +1213,7 @@ function initMobileCartButtons() {
 // 2. Paste the Apps Script code from the guide below
 // 3. Deploy as Web App (Anyone can access)
 // 4. Replace the URL below with your deployed Apps Script URL
-const ORDERS_SCRIPT_URL = ""; // ← PASTE YOUR APPS SCRIPT WEB APP URL HERE
+const ORDERS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytHRWoz1_aCIzAag9n0aKP3NHGZhuf63CWjqHdPVl8xphQ7HDFCDFNHXSINfIe2rG_/exec"; // ← PASTE YOUR APPS SCRIPT WEB APP URL HERE
 
 async function submitOrderToSheet(orderData) {
   if (!ORDERS_SCRIPT_URL || ORDERS_SCRIPT_URL.trim() === "") {
