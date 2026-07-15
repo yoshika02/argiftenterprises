@@ -1,4 +1,6 @@
 import { categories as defaultCategories, products as defaultProducts } from './data.js';
+import banner1Url from '../ARgiftcollection Web 1 .jpg.jpeg';
+import banner2Url from '../Web 2 .jpg.jpeg';
 
 // ==========================================
 // GOOGLE SHEETS INTEGRATION
@@ -92,6 +94,10 @@ function initBannerSlider() {
   const prev   = document.getElementById('banner-prev');
   const next   = document.getElementById('banner-next');
   if (!slides.length) return;
+
+  // Apply imported image URLs dynamically so Vite serves them correctly via HMR
+  if (slides[0]) slides[0].style.backgroundImage = `url('${banner1Url}')`;
+  if (slides[1]) slides[1].style.backgroundImage = `url('${banner2Url}')`;
 
   let current = 0;
   let timer;
@@ -254,11 +260,14 @@ function renderCarousel() {
     slide.innerHTML = `
       <div class="carousel-content">
         <div class="carousel-image">
-          <div class="carousel-img-wrap" style="width:100%;height:100%;overflow:hidden;border-radius:12px;background:#fff7f0;">
-            <img src="${product.image}" alt="${product.name}"
-              style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;"
-              onerror="this.style.display='none'" />
-          </div>
+          <div class="carousel-img-wrap${extraClass}" style="
+            width:100%;height:100%;overflow:hidden;border-radius:12px;
+            background-image:url('${product.image}');
+            background-size:contain;
+            background-position:center;
+            background-repeat:no-repeat;
+            background-color:transparent;
+          "></div>
           <span class="carousel-scale">${product.scale}</span>
         </div>
         <div class="carousel-details">
