@@ -660,7 +660,7 @@ function initModalEvents() {
 function openProductModal(product) {
   // Populate details
   modalProductImage.style.backgroundImage = `url('${product.image}')`;
-  modalProductImage.className = 'modal-img' + (product.cropClass ? ` ${product.cropClass}` : '');
+  modalProductImage.className = 'modal-img';
   modalProductImage.setAttribute('aria-label', product.name);
   modalProductScale.textContent = product.scale;
   modalProductName.textContent = product.name;
