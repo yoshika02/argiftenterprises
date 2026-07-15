@@ -452,12 +452,7 @@
             <button class="modal-tab-btn" data-tab="tab-inquire" id="btn-tab-inquire">Request Quote</button>
           </div>
 
-          <!-- Add to Cart in Modal -->
-          <div style="margin-top: 1rem; display: flex; gap: 1rem;">
-             <button class="btn-primary" id="modal-add-to-cart" style="flex: 1; justify-content: center;">
-               Add to Cart
-             </button>
-          </div>
+          <!-- Add to Cart moved to bottom for sticky behavior -->
 
           <!-- Tab 1: Specs -->
           <div class="modal-tab-pane active" id="tab-specs">
@@ -510,6 +505,12 @@
             </div>
           </div>
 
+          <!-- Add to Cart in Modal (Sticky Bottom) -->
+          <div class="modal-sticky-cart">
+             <button class="btn-primary" id="modal-add-to-cart" style="flex: 1; justify-content: center;">
+               Add to Cart
+             </button>
+          </div>
         </div>
       </div>
     </div>
