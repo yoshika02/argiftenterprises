@@ -254,9 +254,9 @@ function renderCarousel() {
     slide.innerHTML = `
       <div class="carousel-content">
         <div class="carousel-image">
-          <div class="carousel-img-wrap" style="width:100%;height:100%;overflow:hidden;border-radius:12px;">
+          <div class="carousel-img-wrap" style="width:100%;height:100%;overflow:hidden;border-radius:12px;background:#fff7f0;">
             <img src="${product.image}" alt="${product.name}"
-              style="width:100%;height:100%;object-fit:cover;object-position:center top;display:block;"
+              style="width:100%;height:100%;object-fit:contain;object-position:center;display:block;"
               onerror="this.style.display='none'" />
           </div>
           <span class="carousel-scale">${product.scale}</span>
