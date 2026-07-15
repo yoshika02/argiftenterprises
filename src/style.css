@@ -1655,7 +1655,7 @@ footer {
   }
 
   .modal-img-col {
-    height: 250px;
+    height: auto;
   }
 
   .modal-content-col {
@@ -1922,7 +1922,7 @@ footer {
   }
 
   .modal-img-col {
-    height: 200px;
+    height: auto;
   }
 
   .modal-title {
@@ -1964,8 +1964,8 @@ footer {
 /* Modal Image Fix */
 .modal-img {
   width: 100%;
-  height: 100%;
-  background-size: cover;
+  min-height: 300px;
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 8px;
