@@ -989,7 +989,7 @@ textarea.form-control {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #07070a;
+  background: #fffde7;
   position: relative;
 }
 
@@ -1336,7 +1336,8 @@ footer {
   }
 
   .modal-grid {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
   }
 
   .modal-img-col {
