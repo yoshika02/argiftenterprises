@@ -357,98 +357,7 @@ header {
   gap: 1.2rem;
 }
 
-/* ── Banner Slider ───────────────────────────────────── */
-.hero-banner {
-  padding: 0;
-  min-height: calc(100vh - 132px);
-  background: #111;
-  display: block;
-  overflow: hidden;
-  margin-top: 0;
-}
 
-.banner-slider {
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 132px);
-}
-
-.banner-slide {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center top;
-  background-repeat: no-repeat;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-  display: flex;
-  align-items: flex-end;
-}
-
-.banner-slide.active {
-  opacity: 1;
-  z-index: 1;
-}
-
-.banner-overlay {
-  width: 100%;
-  padding: 2.5rem 3rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
-}
-
-.banner-cta-group {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.banner-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  background: rgba(255,255,255,0.15);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #fff;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.banner-nav:hover { background: rgba(255,102,0,0.5); border-color: #ff6600; }
-.banner-prev { left: 1.5rem; }
-.banner-next { right: 1.5rem; }
-
-.banner-dots {
-  position: absolute;
-  bottom: 1.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.banner-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.4);
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s;
-}
-
-.banner-dot.active {
-  background: #ff6600;
-  transform: scale(1.3);
-}
 
 /* Related figures thumbnails in modal */
 .modal-related-thumb {
@@ -2472,19 +2381,6 @@ footer {
   }
 }
 
-/* Banner responsive — fill screen minus header */
-@media (max-width: 768px) {
-  .banner-slider  { height: calc(100vh - 132px); }
-  .hero-banner    { min-height: calc(100vh - 132px); }
-  .banner-overlay { padding: 1.5rem; }
-  .banner-nav     { width: 36px; height: 36px; font-size: 1rem; }
-  .banner-prev    { left: 0.75rem; }
-  .banner-next    { right: 0.75rem; }
-}
-
 @media (max-width: 480px) {
-  .banner-slider  { height: calc(100svh - 132px); }
-  .hero-banner    { min-height: calc(100svh - 132px); }
-  .banner-cta-group { gap: 0.5rem; }
   .modal-related-thumb { width: 46px; height: 46px; }
 }
