@@ -211,13 +211,25 @@ function initNavigation() {
     switchView('home-view');
   });
 
-  // Hero section CTA buttons
-  heroCtaCatalog.addEventListener('click', () => {
-    switchView('catalog-view');
-  });
-  heroCtaContact.addEventListener('click', () => {
-    switchView('contact-view');
-  });
+  // Hero section CTA buttons (fallback if ever unhidden)
+  if (heroCtaCatalog) {
+    heroCtaCatalog.addEventListener('click', () => {
+      switchView('catalog-view');
+    });
+  }
+  if (heroCtaContact) {
+    heroCtaContact.addEventListener('click', () => {
+      switchView('contact-view');
+    });
+  }
+
+  // Make entire banner clickable since image contains baked-in CTA
+  const bannerSlider = document.getElementById('banner-slider');
+  if (bannerSlider) {
+    bannerSlider.addEventListener('click', () => {
+      switchView('catalog-view');
+    });
+  }
 }
 
 function switchView(viewId) {

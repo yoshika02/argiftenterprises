@@ -388,21 +388,20 @@ header {
 .banner-slide.active {
   opacity: 1;
   z-index: 1;
+  cursor: pointer; /* Image is the CTA */
 }
 
 .banner-overlay {
-  width: 100%;
-  padding: 2.5rem 3rem;
-  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 100%);
+  display: none; /* Hide HTML buttons and gradient since image has baked-in CTA */
 }
 
 .banner-cta-group {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+  display: none;
 }
 
 .banner-nav {
+  display: none; /* Hide arrows to clean up overlay */
+}
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -2476,10 +2475,6 @@ footer {
 @media (max-width: 768px) {
   .banner-slider  { height: calc(100vh - 132px); }
   .hero-banner    { min-height: calc(100vh - 132px); }
-  .banner-overlay { padding: 1.5rem; }
-  .banner-nav     { width: 36px; height: 36px; font-size: 1rem; }
-  .banner-prev    { left: 0.75rem; }
-  .banner-next    { right: 0.75rem; }
 }
 
 @media (max-width: 480px) {
