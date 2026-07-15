@@ -764,10 +764,10 @@ header {
   position: absolute;
   bottom: 1rem;
   left: 1rem;
-  background: #e6f7ff;
-  color: #003a5c;
+  background: rgba(255, 102, 0, 0.1);
+  color: var(--accent-orange);
   backdrop-filter: blur(5px);
-  border: 1px solid #b3e0ff;
+  border: 1px solid rgba(255, 102, 0, 0.3);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 0.25rem 0.65rem;
@@ -1248,11 +1248,11 @@ footer {
   position: absolute;
   bottom: 1.5rem;
   left: 1.5rem;
-  background: rgba(5, 5, 8, 0.85);
-  backdrop-filter: blur(5px);
-  border: 1px solid var(--border-light);
+  background: rgba(255, 102, 0, 0.1);
+  color: var(--accent-orange);
+  border: 1px solid rgba(255, 102, 0, 0.3);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   padding: 0.5rem 1rem;
   border-radius: 6px;
 }
