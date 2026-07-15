@@ -1,5 +1,6 @@
 import { categories as defaultCategories, products as defaultProducts } from './data.js';
 import banner1Url from '../ARgiftcollection Web 1 .jpg.jpeg';
+import banner2Url from '../Web 2 .jpg.jpeg';
 
 // ==========================================
 // GOOGLE SHEETS INTEGRATION
@@ -88,11 +89,43 @@ document.addEventListener('DOMContentLoaded', async () => {
 // BANNER SLIDER
 // ==========================================
 function initBannerSlider() {
-  const bannerImg = document.getElementById('main-banner-img');
-  if (bannerImg) {
-    // Apply imported image URL dynamically so Vite serves it correctly via HMR
-    bannerImg.src = banner1Url;
+  const slides = document.querySelectorAll('.banner-slide');
+  const dots   = document.querySelectorAll('.banner-dot');
+  const prev   = document.getElementById('banner-prev');
+  const next   = document.getElementById('banner-next');
+  if (!slides.length) return;
+
+  // Apply imported image URLs dynamically so Vite serves them correctly via HMR
+  if (slides[0]) slides[0].style.backgroundImage = `url('${banner1Url}')`;
+  if (slides[1]) slides[1].style.backgroundImage = `url('${banner2Url}')`;
+
+  let current = 0;
+  let timer;
+
+  function goTo(idx) {
+    slides[current].classList.remove('active');
+    dots[current] && dots[current].classList.remove('active');
+    current = (idx + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current] && dots[current].classList.add('active');
   }
+
+  function autoPlay() {
+    timer = setInterval(() => goTo(current + 1), 5000);
+  }
+
+  function reset() { clearInterval(timer); autoPlay(); }
+
+  if (prev) prev.addEventListener('click', () => { goTo(current - 1); reset(); });
+  if (next) next.addEventListener('click', () => { goTo(current + 1); reset(); });
+  dots.forEach(d => d.addEventListener('click', () => { goTo(parseInt(d.dataset.index)); reset(); }));
+
+  // "Shop Now" buttons on banner slides
+  document.querySelectorAll('.banner-cta-catalog').forEach(btn =>
+    btn.addEventListener('click', () => switchView('catalog-view'))
+  );
+
+  autoPlay();
 }
 
 // Fetch Data from Google Sheets CSV
