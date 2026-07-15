@@ -379,6 +379,7 @@ header {
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
+  background-image: var(--bg-desktop);
   opacity: 0;
   transition: opacity 0.8s ease;
   display: flex;
@@ -2457,6 +2458,7 @@ footer {
 @media (max-width: 768px) {
   .banner-slider  { height: calc(100vh - 132px); }
   .hero-banner    { min-height: calc(100vh - 132px); }
+  .banner-slide   { background-image: var(--bg-mobile); background-position: center; }
 }
 
 @media (max-width: 480px) {

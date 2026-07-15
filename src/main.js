@@ -1,5 +1,6 @@
 import { categories as defaultCategories, products as defaultProducts } from './data.js';
 import banner1Url from '../ARgiftcollection Web 1 .jpg.jpeg';
+import banner2Url from '../Web 2 .jpg.jpeg';
 
 // ==========================================
 // GOOGLE SHEETS INTEGRATION
@@ -94,8 +95,11 @@ function initBannerSlider() {
   const next   = document.getElementById('banner-next');
   if (!slides.length) return;
 
-  // Apply imported image URLs dynamically so Vite serves them correctly via HMR
-  if (slides[0]) slides[0].style.backgroundImage = `url('${banner1Url}')`;
+  // Apply imported image URLs dynamically using CSS variables for responsive switching
+  if (slides[0]) {
+    slides[0].style.setProperty('--bg-desktop', `url('${banner1Url}')`);
+    slides[0].style.setProperty('--bg-mobile', `url('${banner2Url}')`);
+  }
 
   let current = 0;
   let timer;
