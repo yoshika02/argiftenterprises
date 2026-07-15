@@ -1,6 +1,5 @@
 import { categories as defaultCategories, products as defaultProducts } from './data.js';
 import banner1Url from '../ARgiftcollection Web 1 .jpg.jpeg';
-import banner2Url from '../Web 2 .jpg.jpeg';
 
 // ==========================================
 // GOOGLE SHEETS INTEGRATION
@@ -97,7 +96,6 @@ function initBannerSlider() {
 
   // Apply imported image URLs dynamically so Vite serves them correctly via HMR
   if (slides[0]) slides[0].style.backgroundImage = `url('${banner1Url}')`;
-  if (slides[1]) slides[1].style.backgroundImage = `url('${banner2Url}')`;
 
   let current = 0;
   let timer;
