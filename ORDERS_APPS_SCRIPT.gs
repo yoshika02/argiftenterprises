@@ -119,10 +119,6 @@ function sendOrderEmail(params, orderId) {
   const business       = params.Business || "";
   const timestamp      = params.Timestamp || new Date().toLocaleString("en-IN");
 
-  // Build QR code URL (links to a WhatsApp message with the order ID)
-  const qrData = encodeURIComponent(`Order ID: ${orderId} | Total: ${orderTotal} | Customer: ${customerName} | WA: ${whatsapp}`);
-  const qrUrl  = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrData}`;
-
   // Format order items as HTML table rows
   const itemRows = orderItems.split("|").map(item => {
     const trimmed = item.trim();
@@ -207,13 +203,13 @@ function sendOrderEmail(params, orderId) {
               </tr>
             </table>
 
-            <!-- QR Code -->
+            <!-- Payment QR Code -->
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center" style="padding:20px;background:#fff7f0;border-radius:12px;border:1px solid rgba(255,102,0,0.15);">
-                  <p style="margin:0 0 12px;font-size:13px;color:#6b3a1f;font-weight:600;">📱 Scan QR for Order Details</p>
-                  <img src="${qrUrl}" alt="Order QR Code" width="160" height="160" style="display:block;margin:0 auto;border-radius:8px;border:3px solid #ff6600;">
-                  <p style="margin:10px 0 0;font-size:11px;color:#a07050;">QR code contains your order reference and summary</p>
+                  <p style="margin:0 0 12px;font-size:14px;color:#1a0a00;font-weight:700;">💳 Scan QR Code to Pay</p>
+                  <img src="https://raw.githubusercontent.com/yoshika02/argiftenterprises/main/payment_qr.jpeg" alt="Payment QR Code" width="200" style="display:block;margin:0 auto;border-radius:8px;border:3px solid #ff6600;">
+                  <p style="margin:12px 0 0;font-size:12px;color:#a07050;font-weight:600;">Please share a screenshot of the payment on WhatsApp after paying.</p>
                 </td>
               </tr>
             </table>
