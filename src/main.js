@@ -1,6 +1,7 @@
 import { categories as defaultCategories, products as defaultProducts } from './data.js';
 import banner1Url from '../ARgiftcollection Web 1 .jpg.jpeg';
 import banner2Url from '../Web 2 .jpg.jpeg';
+import banner3Url from '../Web- 3.jpg.jpeg';
 
 // ==========================================
 // GOOGLE SHEETS INTEGRATION
@@ -97,8 +98,8 @@ function initBannerSlider() {
 
   // Apply imported image URLs dynamically using CSS variables for responsive switching
   if (slides[0]) {
-    slides[0].style.setProperty('--bg-desktop', `url('${banner1Url}')`);
-    slides[0].style.setProperty('--bg-mobile', `url('${banner2Url}')`);
+    slides[0].style.setProperty('--bg-desktop', `url('${banner3Url}')`);
+    slides[0].style.setProperty('--bg-mobile',  `url('${banner3Url}')`);
   }
 
   let current = 0;

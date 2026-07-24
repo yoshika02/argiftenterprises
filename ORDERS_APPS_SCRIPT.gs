@@ -219,12 +219,12 @@ function sendOrderEmail(params, orderId) {
         <!-- WhatsApp CTA -->
         <tr>
           <td style="padding:0 40px 36px;text-align:center;">
-            <a href="https://chat.whatsapp.com/KDBjvt5BtJ9DUY1vb3DcW2"
+            <a href="https://wa.me/918585979398?text=Hi%20A.R.%20GiftCollection%2C%20I%20just%20placed%20an%20order%20(${orderId})%20and%20want%20to%20confirm%20the%20details."
                style="display:inline-block;background:#25d366;color:#fff;font-weight:700;padding:14px 32px;border-radius:50px;text-decoration:none;font-size:15px;margin-bottom:10px;">
-              💬 Join Our WhatsApp Group
+              💬 Message Us on WhatsApp
             </a>
             <p style="margin:10px 0 0;font-size:12px;color:#a07050;">
-              Get updates, new arrivals, and exclusive wholesale deals
+              Tap to send us a WhatsApp message for order confirmation & updates
             </p>
           </td>
         </tr>
