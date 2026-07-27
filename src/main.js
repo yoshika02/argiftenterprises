@@ -10,7 +10,7 @@ import banner3Url from '../Web- 3.jpg.jpeg';
 // 1. Create a Google Sheet with headers: id, categoryId, name, scale, price, image, features
 // 2. Click File -> Share -> Publish to Web -> Choose "CSV"
 // 3. Paste the provided URL inside the quotes below:
-const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/1TjVX-4f6B039tb4URvacKMPDgy8C6Z5p_bz07qlRN9k/export?format=csv"; 
+const GOOGLE_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/1TjVX-4f6B039tb4URvacKMPDgy8C6Z5p_bz07qlRN9k/export?format=csv";
 
 // DOM Elements
 const views = document.querySelectorAll('.view');
@@ -91,15 +91,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ==========================================
 function initBannerSlider() {
   const slides = document.querySelectorAll('.banner-slide');
-  const dots   = document.querySelectorAll('.banner-dot');
-  const prev   = document.getElementById('banner-prev');
-  const next   = document.getElementById('banner-next');
+  const dots = document.querySelectorAll('.banner-dot');
+  const prev = document.getElementById('banner-prev');
+  const next = document.getElementById('banner-next');
   if (!slides.length) return;
 
   // Apply imported image URLs dynamically using CSS variables for responsive switching
   if (slides[0]) {
     slides[0].style.setProperty('--bg-desktop', `url('${banner3Url}')`);
-    slides[0].style.setProperty('--bg-mobile',  `url('${banner3Url}')`);
+    slides[0].style.setProperty('--bg-mobile', `url('${banner2Url}')`);
   }
 
   let current = 0;
@@ -147,7 +147,7 @@ async function fetchCatalogFromGoogleSheets() {
       download: true,
       header: true,
       skipEmptyLines: true,
-      complete: function(results) {
+      complete: function (results) {
         if (results.data && results.data.length > 0) {
           const categoryMap = {
             '1': 'anime-figurines', '2': 'car-dashboard', '3': 'katana',
@@ -172,7 +172,7 @@ async function fetchCatalogFromGoogleSheets() {
         }
         resolve();
       },
-      error: function(err) { console.error("Failed to load catalog:", err); resolve(); }
+      error: function (err) { console.error("Failed to load catalog:", err); resolve(); }
     });
   });
 }
@@ -475,7 +475,7 @@ function renderProducts() {
     // Check if already in cart
     const inCart = cart.some(i => i.product.id === product.id);
     const cartItem = cart.find(i => i.product.id === product.id);
-    const cartQty  = cartItem ? cartItem.quantity : 1;
+    const cartQty = cartItem ? cartItem.quantity : 1;
 
     card.innerHTML = `
       <div class="product-img-wrapper">
@@ -517,12 +517,12 @@ function renderProducts() {
     card.querySelector('.view-details-btn').addEventListener('click', () => openProductModal(product));
 
     if (product.inStock) {
-      const addBtn      = card.querySelector('.add-to-cart-btn');
-      const qtyInline   = card.querySelector('.cart-qty-inline');
-      const qtyInput    = card.querySelector('.qty-value-input');
-      const qtyMinus    = card.querySelector('.qty-minus');
-      const qtyPlus     = card.querySelector('.qty-plus');
-      const goCartBtn   = card.querySelector('.go-to-cart-btn');
+      const addBtn = card.querySelector('.add-to-cart-btn');
+      const qtyInline = card.querySelector('.cart-qty-inline');
+      const qtyInput = card.querySelector('.qty-value-input');
+      const qtyMinus = card.querySelector('.qty-minus');
+      const qtyPlus = card.querySelector('.qty-plus');
+      const goCartBtn = card.querySelector('.go-to-cart-btn');
 
       // Track local qty for new additions (if not yet in cart)
       let pendingQty = 1;
@@ -535,14 +535,14 @@ function renderProducts() {
 
       // Phase-toggle helper
       function showQtyPhase() {
-        if (addBtn)    addBtn.style.display    = 'none';
+        if (addBtn) addBtn.style.display = 'none';
         if (qtyInline) qtyInline.classList.add('visible');
         if (goCartBtn) goCartBtn.classList.add('visible');
         syncQtyFromCart();
       }
 
       function showAddPhase() {
-        if (addBtn)    addBtn.style.display    = 'inline-flex';
+        if (addBtn) addBtn.style.display = 'inline-flex';
         if (qtyInline) qtyInline.classList.remove('visible');
         if (goCartBtn) goCartBtn.classList.remove('visible');
         pendingQty = 1;
@@ -560,18 +560,18 @@ function renderProducts() {
           showQtyPhase();
         });
       }
-      
+
       // Manual quantity input
       if (qtyInput) {
         qtyInput.addEventListener('change', (e) => {
           e.stopPropagation();
           const newQty = parseInt(e.target.value, 10);
           if (isNaN(newQty) || newQty <= 0) {
-             removeFromCart(product.id);
-             showAddPhase();
+            removeFromCart(product.id);
+            showAddPhase();
           } else {
-             setCartQty(product.id, newQty);
-             syncQtyFromCart();
+            setCartQty(product.id, newQty);
+            syncQtyFromCart();
           }
         });
         qtyInput.addEventListener('click', (e) => e.stopPropagation()); // prevent triggering details view
@@ -603,11 +603,11 @@ function renderProducts() {
           e.stopPropagation();
           const ci = cart.find(i => i.product.id === product.id);
           if (ci) {
-             changeCartQty(product.id, 1);
-             syncQtyFromCart();
+            changeCartQty(product.id, 1);
+            syncQtyFromCart();
           } else {
-             pendingQty++;
-             if (qtyInput) qtyInput.value = pendingQty;
+            pendingQty++;
+            if (qtyInput) qtyInput.value = pendingQty;
           }
         });
       }
@@ -892,8 +892,8 @@ function setCartQty(productId, newQty) {
 function updateCartUI() {
   const cartCountEl = document.getElementById('cart-count');
   const mobileBadge = document.getElementById('mobile-cart-badge');
-  const mfcCount    = document.getElementById('mfc-count');
-  const mfcBtn      = document.getElementById('mobile-float-cart');
+  const mfcCount = document.getElementById('mfc-count');
+  const mfcBtn = document.getElementById('mobile-float-cart');
   const dcpTabCount = document.getElementById('dcp-tab-count');
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -938,12 +938,12 @@ function updateCartUI() {
 
 function renderCart() {
   const cartContainer = document.getElementById('cart-items-container');
-  const cartTotalEl   = document.getElementById('cart-total-price');
-  const checkoutBtn   = document.getElementById('checkout-btn');
-  const progressEl    = document.getElementById('min-order-progress');
-  const labelEl       = document.getElementById('min-order-label');
-  const msgEl         = document.getElementById('min-order-msg');
-  const MIN_ORDER     = 5000;
+  const cartTotalEl = document.getElementById('cart-total-price');
+  const checkoutBtn = document.getElementById('checkout-btn');
+  const progressEl = document.getElementById('min-order-progress');
+  const labelEl = document.getElementById('min-order-label');
+  const msgEl = document.getElementById('min-order-msg');
+  const MIN_ORDER = 5000;
 
   if (!cartContainer || !cartTotalEl) return;
 
@@ -951,8 +951,8 @@ function renderCart() {
     cartContainer.innerHTML = '<p style="text-align:center;color:var(--text-secondary);padding:2rem 0;">Your cart is currently empty. Add items from the Catalog!</p>';
     cartTotalEl.textContent = '₹0';
     if (progressEl) progressEl.style.width = '0%';
-    if (labelEl)    labelEl.textContent = '₹0 / ₹5,000';
-    if (msgEl)      msgEl.textContent = 'Add items to start your wholesale order.';
+    if (labelEl) labelEl.textContent = '₹0 / ₹5,000';
+    if (msgEl) msgEl.textContent = 'Add items to start your wholesale order.';
     if (checkoutBtn) {
       checkoutBtn.disabled = true;
       checkoutBtn.style.opacity = '0.45';
@@ -1000,7 +1000,7 @@ function renderCart() {
   // Update progress bar
   const pct = Math.min(100, (total / MIN_ORDER) * 100);
   if (progressEl) progressEl.style.width = `${pct}%`;
-  if (labelEl)    labelEl.textContent = `₹${total.toLocaleString('en-IN')} / ₹5,000`;
+  if (labelEl) labelEl.textContent = `₹${total.toLocaleString('en-IN')} / ₹5,000`;
 
   const remaining = MIN_ORDER - total;
   if (msgEl) {
@@ -1062,12 +1062,12 @@ function renderCart() {
 // DESKTOP SIDE CART PANEL RENDERING
 // =============================================
 function renderDesktopCartPanel() {
-  const panel    = document.getElementById('desktop-cart-panel');
-  const itemsEl  = document.getElementById('dcp-items');
-  const totalEl  = document.getElementById('dcp-total');
-  const fillEl   = document.getElementById('dcp-progress-fill');
-  const msgEl    = document.getElementById('dcp-progress-msg');
-  const chkBtn   = document.getElementById('dcp-checkout-btn');
+  const panel = document.getElementById('desktop-cart-panel');
+  const itemsEl = document.getElementById('dcp-items');
+  const totalEl = document.getElementById('dcp-total');
+  const fillEl = document.getElementById('dcp-progress-fill');
+  const msgEl = document.getElementById('dcp-progress-msg');
+  const chkBtn = document.getElementById('dcp-checkout-btn');
   const MIN_ORDER = 5000;
 
   if (!panel || !itemsEl) return;
@@ -1075,8 +1075,8 @@ function renderDesktopCartPanel() {
   if (cart.length === 0) {
     itemsEl.innerHTML = '<p class="dcp-empty">Your cart is empty.<br>Add items from the catalog!</p>';
     if (totalEl) totalEl.textContent = '₹0';
-    if (fillEl)  fillEl.style.width = '0%';
-    if (msgEl)   msgEl.textContent = 'Min ₹5,000 for checkout';
+    if (fillEl) fillEl.style.width = '0%';
+    if (msgEl) msgEl.textContent = 'Min ₹5,000 for checkout';
     if (chkBtn) {
       chkBtn.disabled = true;
       chkBtn.style.opacity = '0.5';
@@ -1089,7 +1089,7 @@ function renderDesktopCartPanel() {
   let total = 0;
   itemsEl.innerHTML = '';
   cart.forEach(item => {
-    const priceNum  = parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
+    const priceNum = parseFloat(String(item.product.price).replace(/[^0-9.]/g, '') || 0);
     const itemTotal = item.quantity * priceNum;
     total += itemTotal;
 
@@ -1165,10 +1165,10 @@ function renderDesktopCartPanel() {
 
 // Init desktop panel tab trigger + open/close
 function initDesktopCartPanel() {
-  const panel   = document.getElementById('desktop-cart-panel');
+  const panel = document.getElementById('desktop-cart-panel');
   const closeBtn = document.getElementById('dcp-close-btn');
-  const goBtn   = document.getElementById('dcp-go-cart-btn');
-  const chkBtn  = document.getElementById('dcp-checkout-btn');
+  const goBtn = document.getElementById('dcp-go-cart-btn');
+  const chkBtn = document.getElementById('dcp-checkout-btn');
 
   // Create the vertical tab trigger button
   const trigger = document.createElement('button');
@@ -1212,7 +1212,7 @@ function initDesktopCartPanel() {
 
 // Init mobile cart button & floating button
 function initMobileCartButtons() {
-  const mobileCartBtn   = document.getElementById('mobile-cart-btn');
+  const mobileCartBtn = document.getElementById('mobile-cart-btn');
   const mobileFloatCart = document.getElementById('mobile-float-cart');
 
   if (mobileCartBtn) {
@@ -1248,10 +1248,10 @@ async function submitOrderToSheet(orderData) {
   try {
     const formData = new FormData();
     Object.entries(orderData).forEach(([k, v]) => formData.append(k, v));
-    const res  = await fetch(ORDERS_SCRIPT_URL, { method: 'POST', body: formData });
+    const res = await fetch(ORDERS_SCRIPT_URL, { method: 'POST', body: formData });
     const text = await res.text();
     let parsed = {};
-    try { parsed = JSON.parse(text); } catch(_) {}
+    try { parsed = JSON.parse(text); } catch (_) { }
     return { success: true, response: text, orderId: parsed.orderId || null };
   } catch (err) {
     console.error("Sheet submission failed:", err);
@@ -1264,8 +1264,8 @@ async function submitOrderToSheet(orderData) {
 // ==========================================
 function openCheckoutView() {
   // Populate checkout cart summary
-  const listEl   = document.getElementById('checkout-items-list');
-  const totalEl  = document.getElementById('checkout-total-display');
+  const listEl = document.getElementById('checkout-items-list');
+  const totalEl = document.getElementById('checkout-total-display');
   if (listEl) {
     let total = 0;
     listEl.innerHTML = cart.map(item => {
@@ -1298,12 +1298,12 @@ function openCheckoutView() {
       placeBtn.textContent = '⏳ Sending...';
       placeBtn.disabled = true;
 
-      const name     = document.getElementById('order-name').value.trim();
-      const phone    = document.getElementById('order-phone').value.trim();
-      const email    = (document.getElementById('order-email') || {}).value?.trim() || '';
+      const name = document.getElementById('order-name').value.trim();
+      const phone = document.getElementById('order-phone').value.trim();
+      const email = (document.getElementById('order-email') || {}).value?.trim() || '';
       const business = document.getElementById('order-business').value.trim();
-      const city     = document.getElementById('order-city').value.trim();
-      const notes    = document.getElementById('order-notes').value.trim();
+      const city = document.getElementById('order-city').value.trim();
+      const notes = document.getElementById('order-notes').value.trim();
 
       // Build order summary string
       let total = 0;
@@ -1317,16 +1317,16 @@ function openCheckoutView() {
       const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
       const orderData = {
-        Timestamp:    timestamp,
-        Name:         name,
-        Phone:        phone,
-        WhatsApp:     phone,
-        Email:        email,
-        Business:     business || '—',
-        City:         city,
-        Notes:        notes || '—',
-        OrderItems:   orderSummary,
-        OrderTotal:   `₹${total.toLocaleString('en-IN')}`,
+        Timestamp: timestamp,
+        Name: name,
+        Phone: phone,
+        WhatsApp: phone,
+        Email: email,
+        Business: business || '—',
+        City: city,
+        Notes: notes || '—',
+        OrderItems: orderSummary,
+        OrderTotal: `₹${total.toLocaleString('en-IN')}`,
       };
 
       const sheetResult = await submitOrderToSheet(orderData);
@@ -1347,10 +1347,10 @@ function showConfirmationPage(name, total, orderId, customerEmail) {
   orderId = orderId || generateLocalOrderId();
   const confirmItems = document.getElementById('confirm-items');
   const confirmTotal = document.getElementById('confirm-total');
-  const confirmMsg   = document.getElementById('confirm-message');
-  const confirmIdEl  = document.getElementById('confirm-order-id');
-  const qrWrap       = document.getElementById('confirm-qr-wrap');
-  const qrImg        = document.getElementById('confirm-qr-img');
+  const confirmMsg = document.getElementById('confirm-message');
+  const confirmIdEl = document.getElementById('confirm-order-id');
+  const qrWrap = document.getElementById('confirm-qr-wrap');
+  const qrImg = document.getElementById('confirm-qr-img');
 
   if (confirmMsg) confirmMsg.textContent = `Thank you, ${name}! Our team will contact you on WhatsApp shortly to confirm your order.`;
   if (confirmTotal) confirmTotal.textContent = `\u20b9${total.toLocaleString('en-IN')}`;
